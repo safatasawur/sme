@@ -1,0 +1,106 @@
+classDiagram
+    class ApplicationUser {
+        +int Id
+        +string FullName
+        +string EmailAddress
+        +string MobileNo
+        +string PasswordHash
+        +UserType UserType
+        +int? RoleId
+        +int? BankId
+        +bool IsActive
+        +bool IsEmailVerified
+        +string? AuthenticationMode
+        +string? OtpCode
+        +DateTime? OtpExpiry
+        +DateTime CreatedAt
+        +DateTime? LastLoginAt
+    }
+    class EndUserProfile {
+        +int Id
+        +int UserId
+        +string FirstName
+        +string LastName
+        +string CNIC
+        +bool IsVerified
+        +string? VerificationToken
+        +DateTime? VerificationTokenExpiry
+    }
+    class LoanRequest {
+        +int Id
+        +string RequestNo
+        +int UserId
+        +int? AssignedBankId
+        +int? StatusId
+        +string NameOfBusiness
+        +decimal Amount
+        +int Tenor
+        +int? SchemeId
+        +DateTime CreatedAt
+        +DateTime? SubmittedAt
+    }
+    class Bank {
+        +int Id
+        +string BankName
+        +string? BankCode
+        +string? IBANPrefix
+        +string? BankEmailAddress
+        +bool IsActive
+    }
+    class Scheme {
+        +int Id
+        +string SchemeName
+        +string? SchemeCode
+        +bool IsPublished
+        +string Status
+        +DateTime? StartDate
+        +DateTime? EndDate
+    }
+    class SchemeFormFieldConfiguration {
+        +int Id
+        +int SchemeId
+        +string FieldName
+        +string FieldType
+        +bool IsAvailable
+        +bool IsRequired
+        +int DisplayOrder
+        +string? ConditionalExpression
+    }
+    class MasterLookup {
+        +int Id
+        +string LookupCode
+        +string LookupName
+        +bool IsActive
+    }
+    class MasterLookupValue {
+        +int Id
+        +int MasterLookupId
+        +string ValueText
+        +string ValueCode
+        +int DisplayOrder
+    }
+    class UserExternalLogin {
+        +int Id
+        +int UserId
+        +string Provider
+        +string ProviderUserId
+    }
+    class AuditLog {
+        +int Id
+        +int? UserId
+        +string Action
+        +string? EntityName
+        +string? EntityId
+        +DateTime CreatedAt
+    }
+
+    ApplicationUser "1" --> "0..1" EndUserProfile : has profile
+    ApplicationUser "1" --> "*" LoanRequest : submits
+    ApplicationUser "*" --> "0..1" Bank : primary bank
+    ApplicationUser "1" --> "*" UserExternalLogin : OAuth links
+    ApplicationUser "1" --> "*" AuditLog : generates
+    LoanRequest "*" --> "0..1" Bank : assigned to
+    LoanRequest "*" --> "0..1" MasterLookupValue : status
+    LoanRequest "*" --> "0..1" Scheme : under scheme
+    Scheme "1" --> "*" SchemeFormFieldConfiguration : configures
+    MasterLookup "1" --> "*" MasterLookupValue : has values

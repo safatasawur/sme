@@ -1,0 +1,15 @@
+@model List<SMElevate.Web.Models.Common.MasterLookup>
+@section HeaderActions {<a asp-area="Admin" asp-controller="AdminLookups" asp-action="Create" class="btn btn-primary btn-3">New Lookup</a>}
+<div class="card"><div class="card-header"><h3 class="card-title">Master Lookup Fields</h3></div><div class="table-responsive">
+<table class="table table-vcenter card-table"><thead><tr><th>Lookup Name</th><th>Code</th><th>Values</th><th>Status</th><th></th></tr></thead><tbody>
+@foreach (var l in Model) {
+<tr><td><strong>@l.LookupName</strong><div class="text-secondary small">@l.Description</div></td><td><code>@l.LookupCode</code></td>
+<td><span class="badge bg-azure-lt">@l.Values.Count values</span></td>
+<td><span class="badge @(l.IsActive ? "bg-green-lt" : "bg-red-lt")">@(l.IsActive ? "Active" : "Inactive")</span></td>
+<td class="text-end"><div class="btn-list flex-nowrap justify-content-end">
+  <a asp-area="Admin" asp-controller="AdminLookups" asp-action="Edit" asp-route-id="@l.Id" class="btn btn-2">Edit</a>
+  <form asp-area="Admin" asp-controller="AdminLookups" asp-action="ToggleActive" asp-route-id="@l.Id" method="post" class="d-inline">@Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-2">@(l.IsActive ? "Deactivate" : "Activate")</button>
+  </form>
+</div></td></tr>}
+</tbody></table></div></div>

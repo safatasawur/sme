@@ -1,0 +1,22 @@
+@model List<SMElevate.Web.Models.Common.AppNotification>
+@section HeaderActions {
+  <form asp-area="EndUser" asp-controller="EndUserNotifications" asp-action="MarkAllRead" method="post" asp-antiforgery="true" class="d-inline">@Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-2">Mark all read</button>
+  </form>
+}
+<div class="card"><div class="card-header"><h3 class="card-title">Notifications</h3></div>
+<div class="list-group list-group-flush">
+@foreach (var n in Model) {
+<div class="list-group-item @(n.IsRead ? "" : "bg-primary-lt")">
+  <div class="row align-items-center">
+    <div class="col text-truncate"><div class="fw-medium">@n.Title</div><div class="text-secondary small mt-1">@n.Message</div><div class="text-muted small mt-1">@n.CreatedAt.ToString("yyyy-MM-dd HH:mm")</div></div>
+    @if (!n.IsRead) {
+    <div class="col-auto">
+      <form asp-area="EndUser" asp-controller="EndUserNotifications" asp-action="MarkRead" asp-route-id="@n.Id" method="post" asp-antiforgery="true">@Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-2 btn-sm">Mark read</button>
+      </form>
+    </div>}
+  </div>
+</div>}
+@if (!Model.Any()) {<div class="list-group-item text-secondary text-center py-4">No notifications yet.</div>}
+</div></div>

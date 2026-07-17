@@ -1,0 +1,19 @@
+@{Layout = null; ViewData["Title"] = "Register";}
+<!doctype html><html><head><meta charset="utf-8"/><title>Register - SMElevate</title><link href="~/dist/css/tabler.css" rel="stylesheet"/><link href="~/dist/css/tabler-themes.css" rel="stylesheet"/></head>
+<body><script src="~/dist/js/tabler-theme.min.js"></script>
+<div class="page page-center"><div class="container container-tight py-4">
+  <div class="text-center mb-4"><span class="h1 mb-0 text-primary">SMElevate</span><div class="text-secondary mt-1">Digital Portal for Financing to Business Enterprises</div></div>
+  <form method="post" asp-area="EndUser" asp-controller="EndUserAccount" asp-action="Register" asp-antiforgery="true" class="card card-md" novalidate>@Html.AntiForgeryToken()
+    <div class="card-body">
+      <h2 class="card-title text-center mb-4">Create new account</h2>
+      @if (!ViewData.ModelState.IsValid) {<div class="alert alert-danger" role="alert">@string.Join(" ", ViewData.ModelState.Values.SelectMany(v=>v.Errors).Select(e=>e.ErrorMessage))</div>}
+      <div class="mb-3"><label class="form-label">Full name</label><input name="FullName" type="text" class="form-control" /></div>
+      <div class="mb-3"><label class="form-label">Email address</label><input name="Email" type="email" class="form-control" /></div>
+      <div class="mb-3"><label class="form-label">Mobile number</label><input name="MobileNo" type="text" class="form-control" placeholder="03xxxxxxxxx" /></div>
+      <div class="mb-3"><label class="form-label">Password</label><input name="Password" type="password" class="form-control" /></div>
+      <div class="mb-3"><label class="form-check"><input name="AgreeTerms" type="checkbox" class="form-check-input" value="true" /><span class="form-check-label">Agree to the terms and conditions.</span></label></div>
+      <div class="form-footer"><button type="submit" class="btn btn-primary w-100">Create new account</button></div>
+    </div>
+  </form>
+  <div class="text-center text-secondary mt-3">Already have an account? <a asp-area="EndUser" asp-controller="EndUserAccount" asp-action="Login">Sign in</a></div>
+</div></div><script src="~/dist/js/tabler.min.js" defer></script></body></html>

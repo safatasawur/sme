@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>@ViewData["Title"] - SMElevate Banks</title>
+  <link href="~/dist/css/tabler.css" rel="stylesheet" />
+  <link href="~/dist/css/tabler-themes.css" rel="stylesheet" />
+  <link href="~/preview/css/demo.css" rel="stylesheet" />
+  <style>@@import url("https://rsms.me/inter/inter.css");</style>
+  @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="layout-fluid">
+  <a href="#content" class="visually-hidden skip-link">Skip to main content</a>
+  <script src="~/dist/js/tabler-theme.min.js"></script>
+  <div class="page">
+    <aside class="navbar navbar-vertical navbar-expand-lg" data-bs-theme="dark">
+      <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-menu" aria-expanded="false">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-brand navbar-brand-autodark">
+          <a asp-area="Banks" asp-controller="BankDashboard" asp-action="Index" class="text-decoration-none">
+            <span class="h2 mb-0 text-primary">SMElevate</span>
+          </a>
+        </div>
+        <div class="collapse navbar-collapse" id="sidebar-menu">
+          <div class="d-flex align-items-center px-3 py-3 mb-2 text-white-50 small">
+            <span class="avatar avatar-sm bg-primary-lt me-2">BK</span>
+            <div>
+              <div class="text-white">@(User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value ?? "Bank User")</div>
+              <div>@(User.FindFirst("BankName")?.Value ?? "Banks Portal")</div>
+            </div>
+          </div>
+          <ul class="navbar-nav pt-lg-0">
+            <li class="nav-item @(ViewData["ActiveNav"] as string == "Dashboard" ? "active" : "")">
+              <a class="nav-link" asp-area="Banks" asp-controller="BankDashboard" asp-action="Index">
+                <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1"><path d="M5 12l-2 0l9 -9l9 9l-2 0" /><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" /><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" /></svg></span>
+                <span class="nav-link-title"> Dashboard </span>
+              </a>
+            </li>
+            <li class="nav-item dropdown @(ViewData["ActiveNav"] as string == "Requests" ? "active" : "")">
+              <a class="nav-link dropdown-toggle" href="#sidebar-requests" data-bs-toggle="dropdown" data-bs-auto-close="false">
+                <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1"><path d="M15 5l0 2" /><path d="M15 11l0 2" /><path d="M15 17l0 2" /><path d="M5 5h14a2 2 0 0 1 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-3a2 2 0 0 0 0 -4v-3a2 2 0 0 1 2 -2" /></svg></span>
+                <span class="nav-link-title"> Request Management </span>
+              </a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" asp-area="Banks" asp-controller="BankRequests" asp-action="Assigned">Assigned Requests</a>
+                <a class="dropdown-item" asp-area="Banks" asp-controller="BankRequests" asp-action="Approved">Approved Requests</a>
+                <a class="dropdown-item" asp-area="Banks" asp-controller="BankRequests" asp-action="Rejected">Rejected Requests</a>
+              </div>
+            </li>
+            <li class="nav-item @(ViewData["ActiveNav"] as string == "Profile" ? "active" : "")">
+              <a class="nav-link" asp-area="Banks" asp-controller="BankProfile" asp-action="Index">
+                <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1"><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /></svg></span>
+                <span class="nav-link-title"> Bank Profile </span>
+              </a>
+            </li>
+            <li class="nav-item mt-3 pt-3 border-top border-white-10">
+              <form asp-area="" asp-controller="Auth" asp-action="Logout" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="nav-link btn btn-link p-0 text-start w-100">
+                  <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1"><path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" /><path d="M7 12h14l-3 -3" /><path d="M18 15l3 -3" /></svg></span>
+                  <span class="nav-link-title"> Logout </span>
+                </button>
+              </form>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+    <div class="page-wrapper">
+      <div class="page-header d-print-none">
+        <div class="container-xl">
+          <div class="row g-2 align-items-center">
+            <div class="col">
+              <div class="page-pretitle">@ViewData["PreTitle"]</div>
+              <h1 class="page-title">@ViewData["Title"]</h1>
+            </div>
+            <div class="col-auto ms-auto d-print-none">
+              @await RenderSectionAsync("HeaderActions", required: false)
+            </div>
+          </div>
+        </div>
+      </div>
+      <main id="content" class="page-body">
+        <div class="container-xl">
+          @if (TempData["Success"] is string successMsg)
+          {
+            <div class="alert alert-success alert-dismissible mb-3" role="alert">@successMsg<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+          }
+          @if (TempData["Error"] is string errorMsg)
+          {
+            <div class="alert alert-danger alert-dismissible mb-3" role="alert">@errorMsg<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+          }
+          @RenderBody()
+        </div>
+      </main>
+      <footer class="footer footer-transparent d-print-none">
+        <div class="container-xl">
+          <ul class="list-inline list-inline-dots mb-0 text-center">
+            <li class="list-inline-item">Copyright &copy; 2026 <span class="link-secondary">SMElevate</span>. All rights reserved.</li>
+            <li class="list-inline-item">Banks Portal</li>
+          </ul>
+        </div>
+      </footer>
+    </div>
+  </div>
+  <script src="~/dist/js/tabler.min.js" defer></script>
+  <script src="~/preview/js/demo.min.js" defer></script>
+  @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

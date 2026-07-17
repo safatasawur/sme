@@ -1,0 +1,126 @@
+@model SMElevate.Web.Areas.EndUser.ViewModels.BusinessVerifyViewModel
+@using SMElevate.Web.Models.Common
+
+<div class="row g-4">
+
+  @* ── Email Verification ── *@
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-header d-flex align-items-center">
+        <h4 class="card-title mb-0">Email Verification</h4>
+        @if (Model.IsBusinessEmailVerified)
+        {
+          <span class="badge bg-success-lt ms-2">Verified</span>
+        }
+        else
+        {
+          <span class="badge bg-secondary-lt ms-2">Pending</span>
+        }
+      </div>
+      <div class="card-body">
+        @if (TempData["EmailSuccess"] is string es)
+        {
+          <div class="alert alert-success">@es</div>
+        }
+        @if (TempData["EmailError"] is string ee)
+        {
+          <div class="alert alert-danger">@ee</div>
+        }
+
+        @if (Model.IsBusinessEmailVerified)
+        {
+          <p class="text-success">Your business email <strong>@Model.MaskedEmail</strong> has been verified.</p>
+        }
+        else
+        {
+          <p class="text-secondary mb-3">Enter the 6-digit OTP sent to <strong>@Model.MaskedEmail</strong>.</p>
+          <form asp-area="EndUser" asp-controller="BusinessProfiles" asp-action="VerifyEmailOtp" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="businessProfileId" value="@Model.BusinessProfileId" />
+            <div class="mb-3">
+              <label class="form-label required">Email OTP</label>
+              <input type="text" name="emailOtp" class="form-control" maxlength="6" inputmode="numeric" autocomplete="one-time-code" required />
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Verify Email</button>
+          </form>
+          <hr />
+          <form asp-area="EndUser" asp-controller="BusinessProfiles" asp-action="ResendEmailOtp" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="businessProfileId" value="@Model.BusinessProfileId" />
+            <button type="submit" class="btn btn-outline-secondary w-100" @(Model.EmailResendCooldown ? "disabled" : "")>
+              @(Model.EmailResendCooldown ? "Please wait before resending..." : "Resend Email OTP")
+            </button>
+          </form>
+        }
+      </div>
+    </div>
+  </div>
+
+  @* ── Mobile Verification ── *@
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-header d-flex align-items-center">
+        <h4 class="card-title mb-0">Mobile Verification</h4>
+        @if (Model.IsBusinessMobileVerified)
+        {
+          <span class="badge bg-success-lt ms-2">Verified</span>
+        }
+        else
+        {
+          <span class="badge bg-secondary-lt ms-2">Pending</span>
+        }
+      </div>
+      <div class="card-body">
+        @if (TempData["MobileSuccess"] is string ms)
+        {
+          <div class="alert alert-success">@ms</div>
+        }
+        @if (TempData["MobileError"] is string me)
+        {
+          <div class="alert alert-danger">@me</div>
+        }
+
+        @if (Model.IsBusinessMobileVerified)
+        {
+          <p class="text-success">Your business mobile <strong>@Model.MaskedMobile</strong> has been verified.</p>
+        }
+        else
+        {
+          <p class="text-secondary mb-3">Enter the 6-digit OTP sent to <strong>@Model.MaskedMobile</strong>.</p>
+          <form asp-area="EndUser" asp-controller="BusinessProfiles" asp-action="VerifyMobileOtp" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="businessProfileId" value="@Model.BusinessProfileId" />
+            <div class="mb-3">
+              <label class="form-label required">Mobile OTP</label>
+              <input type="text" name="mobileOtp" class="form-control" maxlength="6" inputmode="numeric" autocomplete="one-time-code" required />
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Verify Mobile</button>
+          </form>
+          <hr />
+          <form asp-area="EndUser" asp-controller="BusinessProfiles" asp-action="ResendMobileOtp" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="businessProfileId" value="@Model.BusinessProfileId" />
+            <button type="submit" class="btn btn-outline-secondary w-100" @(Model.MobileResendCooldown ? "disabled" : "")>
+              @(Model.MobileResendCooldown ? "Please wait before resending..." : "Resend Mobile OTP")
+            </button>
+          </form>
+        }
+      </div>
+    </div>
+  </div>
+
+</div>
+
+@if (Model.BusinessVerificationStatus == BusinessVerificationStatus.Verified)
+{
+  <div class="alert alert-success mt-4">
+    Your business is fully verified! You can now use it in loan applications.
+    <a asp-area="EndUser" asp-controller="BusinessProfiles" asp-action="Index" class="btn btn-sm btn-success ms-3">Go to Business Profiles</a>
+  </div>
+}
+else
+{
+  <div class="mt-3">
+    <a asp-area="EndUser" asp-controller="BusinessProfiles" asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+  </div>
+}

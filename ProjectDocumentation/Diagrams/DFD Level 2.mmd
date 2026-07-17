@@ -1,0 +1,73 @@
+flowchart TD
+    P4_1["P4.1
+SME Selects
+Published Scheme"]
+    P4_2["P4.2
+AJAX: Load Form Fields
+from SchemeFormFieldConfigurations"]
+    P4_3["P4.3
+Render Dynamic
+Loan Application Form"]
+    P4_4["P4.4
+SME Fills Business,
+Facility, Shareholder,
+Bank, IBAN/RAAST fields"]
+    P4_5["P4.5
+Submit Form
+(POST Create)"]
+    P4_6["P4.6
+Validate ModelState
++ Profile Verified Check"]
+    P4_7["P4.7
+Generate RequestNo
+SME-YYYYMMDD-NNNNNN
+(RequestNumberService)"]
+    P4_8["P4.8
+Save LoanRequest
++ Shareholders
++ FieldValues
+(single SaveChanges)"]
+    P4_9["P4.9
+Set Status = Assigned
+Link to Bank + Scheme"]
+    P4_10["P4.10
+Send Emails:
+SME Confirmation
++ Bank Notification"]
+    P4_11["P4.11
+Create In-App
+Notification for Bank"]
+    P4_12["P4.12
+Log Audit Event"]
+    P4_13["P4.13
+Redirect to
+Confirmation Page"]
+
+    SchemeFCs[("SchemeFormField
+Configurations")]
+    LR[("LoanRequests")]
+    SH[("LoanRequest
+Shareholders")]
+    FV[("LoanRequest
+FieldValues")]
+    EL[("EmailLogs")]
+    AN[("AppNotifications")]
+    AL[("AuditLogs")]
+
+    P4_1 --> P4_2
+    SchemeFCs --> P4_2
+    P4_2 --> P4_3
+    P4_3 --> P4_4
+    P4_4 --> P4_5
+    P4_5 --> P4_6
+    P4_6 --> P4_7
+    P4_7 --> P4_8
+    P4_8 --> P4_9
+    P4_8 --> LR & SH & FV
+    P4_9 --> P4_10
+    P4_10 --> EL
+    P4_10 --> P4_11
+    P4_11 --> AN
+    P4_11 --> P4_12
+    P4_12 --> AL
+    P4_12 --> P4_13

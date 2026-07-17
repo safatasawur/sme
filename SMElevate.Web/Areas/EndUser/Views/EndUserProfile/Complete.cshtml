@@ -1,0 +1,25 @@
+@model SMElevate.Web.Areas.EndUser.ViewModels.ProfileCompleteViewModel
+@{Layout = null; ViewData["Title"] = "Complete Your Profile";}
+<!doctype html><html><head><meta charset="utf-8"/><title>Complete Profile - SMElevate</title><link href="~/dist/css/tabler.css" rel="stylesheet"/><link href="~/dist/css/tabler-themes.css" rel="stylesheet"/></head>
+<body><script src="~/dist/js/tabler-theme.min.js"></script>
+<div class="page page-center"><div class="container container-tight py-4">
+  <div class="text-center mb-4"><span class="h1 mb-0 text-primary">SMElevate</span><div class="text-secondary mt-1">Digital Portal for Financing to Business Enterprises</div></div>
+  <form method="post" asp-area="EndUser" asp-controller="EndUserProfile" asp-action="Complete" asp-antiforgery="true" class="card card-md" novalidate>@Html.AntiForgeryToken()
+    <div class="card-body">
+      <h2 class="card-title text-center mb-1">Complete Your Profile</h2>
+      <p class="text-secondary text-center mb-4">Please provide your details to continue to SMElevate.</p>
+      @if (!ViewData.ModelState.IsValid) {<div class="alert alert-danger" role="alert">@string.Join(" ", ViewData.ModelState.Values.SelectMany(v=>v.Errors).Select(e=>e.ErrorMessage))</div>}
+      <div class="row"><div class="col-md-6 mb-3"><label class="form-label required">First Name</label><input asp-for="FirstName" class="form-control" /></div>
+      <div class="col-md-6 mb-3"><label class="form-label required">Last Name</label><input asp-for="LastName" class="form-control" /></div></div>
+      <div class="row"><div class="col-md-6 mb-3"><label class="form-label required">Mobile No.</label><input asp-for="MobileNo" class="form-control" placeholder="03xxxxxxxxx" /></div>
+      <div class="col-md-6 mb-3"><label class="form-label required">CNIC</label><input asp-for="CNIC" class="form-control" placeholder="xxxxx-xxxxxxx-x" /></div></div>
+      <div class="mb-3"><label class="form-label required">Business Email Address</label><input asp-for="BusinessEmailAddress" type="email" class="form-control" /></div>
+      <div class="mb-3"><label class="form-label required">Gender of Proprietor</label>
+        <div><label class="form-check form-check-inline"><input asp-for="GenderOfProprietor" type="radio" value="Male" class="form-check-input" /><span class="form-check-label">Male</span></label>
+        <label class="form-check form-check-inline"><input asp-for="GenderOfProprietor" type="radio" value="Female" class="form-check-input" /><span class="form-check-label">Female</span></label>
+        <label class="form-check form-check-inline"><input asp-for="GenderOfProprietor" type="radio" value="Other / Prefer not to say" class="form-check-input" /><span class="form-check-label">Other / Prefer not to say</span></label></div>
+      </div>
+      <div class="form-footer"><button type="submit" class="btn btn-primary w-100">Save and Continue</button></div>
+    </div>
+  </form>
+</div></div><script src="~/dist/js/tabler.min.js" defer></script></body></html>

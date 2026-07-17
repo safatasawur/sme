@@ -1,0 +1,60 @@
+flowchart TD
+    subgraph Processes["Processes"]
+        P1["P1
+Authentication
+(Login, OAuth, OTP)"]
+        P2["P2
+User & Profile
+Management"]
+        P3["P3
+Profile
+Verification"]
+        P4["P4
+Loan Application
+Submission"]
+        P5["P5
+Bank Decision
+Processing"]
+        P6["P6
+Notification
+Dispatch"]
+        P7["P7
+Admin
+Management"]
+        P8["P8
+Settings &
+Configuration"]
+    end
+    subgraph DataStores["Data Stores"]
+        DS1[("D1 ApplicationUsers
+Roles
+UserExternalLogins")]
+        DS2[("D2 LoanRequests
+Shareholders
+FieldValues
+StatusHistory")]
+        DS3[("D3 Schemes
+SchemeFormFieldConfigurations")]
+        DS4[("D4 SystemSettings")]
+        DS5[("D5 EmailLogs
+EmailTemplates")]
+        DS6[("D6 AuditLogs")]
+        DS7[("D7 AppNotifications")]
+        DS8[("D8 MasterLookups
+MasterLookupValues")]
+    end
+
+    P1 --> DS1
+    P1 --> DS6
+    P2 --> DS1
+    P3 --> DS1
+    P4 --> DS2
+    P4 --> DS3
+    P4 --> DS8
+    P5 --> DS2
+    P6 --> DS5
+    P6 --> DS7
+    P7 --> DS1 & DS3 & DS8
+    P8 --> DS4
+    P2 --> DS6
+    P5 --> DS6

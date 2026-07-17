@@ -1,0 +1,163 @@
+@{
+    Layout = null;
+    ViewData["Title"] = "Banks Login";
+}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Banks Login - SMElevate</title>
+  <link href="~/dist/css/tabler.css" rel="stylesheet" />
+  <link href="~/dist/css/tabler-themes.css" rel="stylesheet" />
+  <link href="~/preview/css/demo.css" rel="stylesheet" />
+  <style>@@import url("https://rsms.me/inter/inter.css");</style>
+</head>
+<body>
+  <a href="#content" class="visually-hidden skip-link">Skip to main content</a>
+  <script src="~/dist/js/tabler-theme.min.js"></script>
+  <div class="page page-center">
+    <div class="container container-tight py-4">
+      <div class="text-center mb-4">
+        <span class="h1 mb-0 text-primary">SMElevate</span>
+        <div class="text-secondary mt-1">Banks Portal</div>
+      </div>
+      <div class="card card-md">
+        <div class="card-body">
+          <h2 class="h2 text-center mb-4">Bank Sign In</h2>
+          <div id="form-error" class="alert alert-important alert-danger d-none" role="alert"></div>
+          <div id="form-success" class="alert alert-important alert-success d-none" role="alert"></div>
+
+          <!-- STEP 1: Email form (always visible) -->
+          <form id="form-email" autocomplete="off" novalidate>
+            <div class="mb-3">
+              <label class="form-label required">Email Address</label>
+              <input type="email" id="bank-email" class="form-control" placeholder="bank.user@example.com" autocomplete="off" />
+            </div>
+            <div class="form-footer">
+              <button type="submit" class="btn btn-primary w-100" id="btn-send-otp">Send OTP</button>
+            </div>
+          </form>
+
+          <!-- STEP 2: OTP form — hidden until email is validated -->
+          <form id="form-otp" class="d-none mt-3" autocomplete="off" novalidate>
+            <div class="mb-3">
+              <label class="form-label required">Enter OTP</label>
+              <input type="text" id="bank-otp" class="form-control form-control-lg text-center"
+                     maxlength="6" inputmode="numeric" placeholder="Enter 6-digit OTP" />
+            </div>
+            <div class="form-footer">
+              <div class="btn-list flex-nowrap">
+                <button type="button" class="btn btn-3 w-100" id="btn-resend-otp">Resend OTP</button>
+                <button type="submit" class="btn btn-primary btn-3 w-100">Verify OTP</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="text-center text-secondary mt-3">Access restricted to authorized Banks Portal users.</div>
+    </div>
+  </div>
+  @Html.AntiForgeryToken()
+  <script src="~/dist/js/tabler.min.js" defer></script>
+  <script>
+    /*
+      Single-page OTP flow matching Banks/sign-in.html behavior exactly:
+      – Email entered → Send OTP clicked → server validates → OTP section appears on same page
+      – OTP entered → Verify clicked → server validates → redirect to dashboard
+      – Resend OTP → regenerates OTP for the same email
+    */
+    document.addEventListener("DOMContentLoaded", function () {
+      var errorBox = document.getElementById("form-error");
+      var successBox = document.getElementById("form-success");
+      var pendingEmail = "";
+
+      function getCsrf() {
+        var el = document.querySelector('input[name="__RequestVerificationToken"]');
+        return el ? el.value : "";
+      }
+
+      function showError(message) {
+        successBox.classList.add("d-none");
+        errorBox.textContent = message;
+        errorBox.classList.remove("d-none");
+      }
+      function showSuccess(message) {
+        errorBox.classList.add("d-none");
+        successBox.textContent = message;
+        successBox.classList.remove("d-none");
+      }
+
+      function postJson(url, data) {
+        return fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "RequestVerificationToken": getCsrf()
+          },
+          body: JSON.stringify(data)
+        }).then(function (r) { return r.json(); });
+      }
+
+      // Email submit → send OTP
+      document.getElementById("form-email").addEventListener("submit", function (event) {
+        event.preventDefault();
+        var email = document.getElementById("bank-email").value.trim();
+        if (!email) { showError("Email address is required."); return; }
+        if (!/^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/.test(email)) { showError("Please enter a valid email address."); return; }
+
+        var btn = document.getElementById("btn-send-otp");
+        btn.disabled = true;
+        btn.textContent = "Sending...";
+
+        postJson("/Banks/BankAuth/SendOtp", { email: email })
+          .then(function (result) {
+            if (!result.ok) {
+              showError(result.error);
+              btn.disabled = false;
+              btn.textContent = "Send OTP";
+              return;
+            }
+            pendingEmail = email;
+            document.getElementById("bank-email").disabled = true;
+            btn.disabled = true;
+            document.getElementById("form-otp").classList.remove("d-none");
+            showSuccess(result.message || "OTP has been sent to your registered bank email address.");
+          })
+          .catch(function () {
+            showError("An error occurred. Please try again.");
+            btn.disabled = false;
+            btn.textContent = "Send OTP";
+          });
+      });
+
+      // Resend OTP
+      document.getElementById("btn-resend-otp").addEventListener("click", function () {
+        var email = pendingEmail || document.getElementById("bank-email").value.trim();
+        postJson("/Banks/BankAuth/ResendOtp", { email: email })
+          .then(function (result) {
+            if (result.ok) showSuccess(result.message || "OTP has been sent to your registered bank email address.");
+            else showError(result.error || "Could not resend OTP. Please try again.");
+          })
+          .catch(function () { showError("An error occurred. Please try again."); });
+      });
+
+      // OTP submit → verify
+      document.getElementById("form-otp").addEventListener("submit", function (event) {
+        event.preventDefault();
+        var otp = document.getElementById("bank-otp").value.trim();
+        if (!otp) { showError("Please enter the OTP sent to your email."); return; }
+        var email = pendingEmail || document.getElementById("bank-email").value.trim();
+
+        postJson("/Banks/BankAuth/VerifyOtpAjax", { otp: otp, pendingEmail: email })
+          .then(function (result) {
+            if (!result.ok) { showError(result.error); return; }
+            showSuccess("Verified successfully. Redirecting to your dashboard...");
+            setTimeout(function () { window.location.href = result.redirect || "/Banks"; }, 600);
+          })
+          .catch(function () { showError("An error occurred. Please try again."); });
+      });
+    });
+  </script>
+</body>
+</html>

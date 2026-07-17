@@ -1,0 +1,38 @@
+erDiagram
+    ApplicationUsers ||--o| EndUserProfiles : "has profile"
+    ApplicationUsers ||--o{ UserExternalLogins : "has OAuth links"
+    ApplicationUsers }o--o| Roles : "has role"
+    ApplicationUsers }o--o| Banks : "primary bank"
+    ApplicationUsers ||--o{ LoanRequests : "submits"
+    ApplicationUsers ||--o{ AppNotifications : "receives"
+    ApplicationUsers ||--o{ AuditLogs : "generates"
+    Banks ||--o{ BankMembers : "has members"
+    Banks ||--o{ LoanRequests : "assigned to"
+    LoanRequests ||--o{ LoanRequestShareholders : "has shareholders"
+    LoanRequests ||--o{ LoanRequestStatusHistories : "has history"
+    LoanRequests ||--o{ LoanRequestAttachments : "has attachments"
+    LoanRequests ||--o{ LoanRequestFieldValues : "has field values"
+    LoanRequests }o--o| MasterLookupValues : "current status"
+    LoanRequests }o--o| Schemes : "under scheme"
+    LoanRequests }o--o| SchemeForms : "form link"
+    Schemes ||--o{ SchemeFormFieldConfigurations : "configures fields"
+    Schemes ||--o| SchemeForms : "has form"
+    SchemeForms ||--o{ SchemeFormFields : "has legacy fields"
+    MasterLookups ||--o{ MasterLookupValues : "has values"
+    SystemSettings {
+        string SettingKey
+        string SettingValue
+        string SettingCategory
+        bool IsEncrypted
+    }
+    EmailTemplates {
+        string TemplateCode
+        string Subject
+        string BodyHtml
+        string RecipientType
+    }
+    EmailLogs {
+        string ToEmail
+        string Status
+        datetime CreatedAt
+    }

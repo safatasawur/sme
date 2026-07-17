@@ -1,0 +1,31 @@
+@model SMElevate.Web.Services.Interfaces.DeclineAnalysisResult
+@{ var banks = ViewBag.Banks as List<SMElevate.Web.Models.Common.Bank>; }
+<form method="get" class="card mb-3">
+  <div class="card-body"><div class="row g-2">
+    <div class="col-md-3"><input type="date" name="from" value="@ViewBag.From" class="form-control" /></div>
+    <div class="col-md-3"><input type="date" name="to" value="@ViewBag.To" class="form-control" /></div>
+    <div class="col-md-3"><select name="bankId" class="form-select"><option value="">All Banks</option>@foreach(var b in banks??new()){<option value="@b.Id" selected="@(ViewBag.BankId != null && ViewBag.BankId.ToString() == b.Id.ToString() ? "selected" : null)">@b.BankName</option>}</select></div>
+    <div class="col-md-3"><button type="submit" class="btn btn-primary w-100">Filter</button></div>
+  </div></div>
+</form>
+<div class="card">
+  <div class="card-header"><h3 class="card-title">Decline Analysis — Total Declined: @Model.TotalDeclined</h3></div>
+  <div class="table-responsive">
+    <table class="table table-vcenter card-table">
+      <thead><tr><th>Code</th><th>Description</th><th>Category</th><th>Count</th><th>% of Declines</th></tr></thead>
+      <tbody>
+        @foreach (var r in Model.Rows.OrderByDescending(x => x.Count)) {
+        <tr>
+          <td><code>@r.ReasonCode</code></td>
+          <td>@r.Description</td>
+          <td><span class="badge bg-red-lt">@r.Category</span></td>
+          <td>@r.Count</td>
+          <td>@r.Percentage.ToString("F1")%</td>
+        </tr>
+        }
+        @if (!Model.Rows.Any()) { <tr><td colspan="5" class="text-center text-secondary">No declined applications in the selected period.</td></tr> }
+      </tbody>
+    </table>
+  </div>
+</div>
+@section HeaderActions { <a asp-area="Admin" asp-controller="AdminReports" asp-action="Index" class="btn btn-2">All Reports</a> }

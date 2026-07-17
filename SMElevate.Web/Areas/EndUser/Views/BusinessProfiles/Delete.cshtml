@@ -1,0 +1,26 @@
+@model SMElevate.Web.Areas.EndUser.ViewModels.BusinessProfileDetailsViewModel
+@{
+  var b = Model.Profile;
+}
+
+<div class="card">
+  <div class="card-header"><h4 class="card-title mb-0 text-danger">Confirm Delete</h4></div>
+  <div class="card-body">
+    <div class="alert alert-warning">
+      <strong>Warning:</strong> This action will archive the business profile <strong>@b.NameOfBusiness</strong>.
+      If this business is linked to any loan requests, deletion will be blocked.
+    </div>
+    <div class="datagrid">
+      <div class="datagrid-item"><div class="datagrid-title">Business Name</div><div class="datagrid-content">@b.NameOfBusiness</div></div>
+      <div class="datagrid-item"><div class="datagrid-title">Contact Person</div><div class="datagrid-content">@b.ContactPerson</div></div>
+      <div class="datagrid-item"><div class="datagrid-title">Mobile / Landline</div><div class="datagrid-content">@b.CellOrLandlineNo</div></div>
+    </div>
+  </div>
+  <div class="card-footer d-flex gap-2">
+    <form asp-area="EndUser" asp-controller="BusinessProfiles" asp-action="Delete" asp-route-id="@b.Id" method="post">
+      @Html.AntiForgeryToken()
+      <button type="submit" class="btn btn-danger">Yes, Delete</button>
+    </form>
+    <a asp-area="EndUser" asp-controller="BusinessProfiles" asp-action="Details" asp-route-id="@b.Id" class="btn btn-outline-secondary">Cancel</a>
+  </div>
+</div>

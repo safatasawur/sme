@@ -1,0 +1,168 @@
+@model SMElevate.Web.Areas.Admin.ViewModels.UserFormViewModel
+<form method="post" asp-antiforgery="true" novalidate class="card" autocomplete="off">
+  <input asp-for="Id" type="hidden" />
+  <div class="card-header">
+    <h3 class="card-title">Edit User</h3>
+  </div>
+  <div class="card-body">
+    <div asp-validation-summary="All" class="alert alert-danger @(ViewData.ModelState.IsValid ? "d-none" : "")"></div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label class="form-label required">Full Name</label>
+        <input asp-for="FullName" class="form-control" />
+        <span asp-validation-for="FullName" class="invalid-feedback d-block"></span>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label required">Email Address</label>
+        <input asp-for="EmailAddress" class="form-control" type="email" />
+        <span asp-validation-for="EmailAddress" class="invalid-feedback d-block"></span>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label class="form-label">Mobile No.</label>
+        <input asp-for="MobileNo" class="form-control" placeholder="03xxxxxxxxx" />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label required">User Type</label>
+        <select asp-for="UserType" class="form-select" id="userTypeSelect" onchange="onUserTypeChange(this.value)">
+          <option value="">— Select User Type —</option>
+          <option value="SME">SME</option>
+          <option value="Bank">Bank</option>
+          <option value="SBP">SBP</option>
+          <option value="Admin">Admin</option>
+        </select>
+        <span asp-validation-for="UserType" class="invalid-feedback d-block"></span>
+      </div>
+    </div>
+
+    <div class="row mb-3" id="auth-mode-row" style="display:none">
+      <div class="col-md-6">
+        <label class="form-label">Authentication Mode</label>
+        <input asp-for="AuthenticationMode" class="form-control" id="authModeInput" readonly />
+        <div class="form-text" id="auth-mode-hint"></div>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Role</label>
+        <select asp-for="RoleId" class="form-select" asp-items="@(new SelectList(Model.Roles, "Id", "RoleName"))">
+          <option value="">— No role —</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row mb-3" id="bank-row" style="display:none">
+      <div class="col-md-6">
+        <label class="form-label">Select Bank</label>
+        <select asp-for="BankId" class="form-select" asp-items="@(new SelectList(Model.Banks, "Id", "BankName"))">
+          <option value="">— No bank —</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row mb-3" id="password-row" style="display:none">
+      <div class="col-md-6">
+        <label class="form-label" id="pwd-label">New Password <span class="text-secondary fw-normal">(leave blank to keep current)</span></label>
+        <input asp-for="NewPassword" type="password" class="form-control" id="NewPassword" oninput="checkPasswordStrength(this.value)" />
+        <span asp-validation-for="NewPassword" class="invalid-feedback d-block"></span>
+        <div id="pwd-strength" class="form-text mt-1"></div>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Confirm New Password</label>
+        <input asp-for="ConfirmPassword" type="password" class="form-control" id="ConfirmPassword" />
+        <span asp-validation-for="ConfirmPassword" class="invalid-feedback d-block"></span>
+      </div>
+    </div>
+
+    <div class="row mb-0">
+      <div class="col-md-6">
+        <label class="form-label required">Status</label>
+        <div>
+          <label class="form-check form-check-inline">
+            <input asp-for="IsActive" class="form-check-input" type="radio" value="true" />
+            <span class="form-check-label">Active</span>
+          </label>
+          <label class="form-check form-check-inline">
+            <input asp-for="IsActive" class="form-check-input" type="radio" value="false" />
+            <span class="form-check-label">Inactive</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer text-end">
+    <a asp-area="Admin" asp-controller="AdminUsers" asp-action="Index" class="btn me-2">Cancel</a>
+    <button type="submit" class="btn btn-primary">Update User</button>
+  </div>
+</form>
+
+@section Scripts {
+<script>
+(function () {
+  var sel = document.getElementById('userTypeSelect');
+  if (sel && sel.value) onUserTypeChange(sel.value);
+})();
+
+function onUserTypeChange(val) {
+  var authRow  = document.getElementById('auth-mode-row');
+  var bankRow  = document.getElementById('bank-row');
+  var pwdRow   = document.getElementById('password-row');
+  var authIn   = document.getElementById('authModeInput');
+  var authHint = document.getElementById('auth-mode-hint');
+  var pwdField = document.getElementById('NewPassword');
+  var cpwdField = document.getElementById('ConfirmPassword');
+
+  authRow.style.display = 'none';
+  bankRow.style.display = 'none';
+  pwdRow.style.display  = 'none';
+
+  if (!val) return;
+  authRow.style.display = '';
+
+  if (val === 'SME') {
+    if (!authIn.value) authIn.value = 'Manual';
+    authIn.readOnly = true;
+    authHint.textContent = 'SME users authenticate with email and password.';
+    pwdRow.style.display = '';
+  } else if (val === 'Bank') {
+    if (!authIn.value) authIn.value = 'OTP';
+    authIn.readOnly = true;
+    authHint.textContent = 'Bank users authenticate via OTP.';
+    bankRow.style.display = '';
+    if (pwdField) pwdField.required = false;
+    if (cpwdField) cpwdField.required = false;
+  } else {
+    authIn.readOnly = false;
+    authHint.textContent = '';
+    pwdRow.style.display = '';
+    if (pwdField) pwdField.required = false;
+    if (cpwdField) cpwdField.required = false;
+  }
+}
+
+function checkPasswordStrength(val) {
+  var el = document.getElementById('pwd-strength');
+  if (!el) return;
+  if (!val) { el.innerHTML = ''; return; }
+  var ok = [
+    val.length >= 8,
+    /[A-Z]/.test(val),
+    /[a-z]/.test(val),
+    /[0-9]/.test(val),
+    (function(s){ var sp='!#$%^&*()-_=+[]{}|;:\',./<>?'; for(var i=0;i<s.length;i++){if(sp.indexOf(s[i])>=0)return true;} return false; })(val)
+  ];
+  var score = ok.filter(Boolean).length;
+  var labels = ['', 'Very Weak', 'Weak', 'Fair', 'Strong', 'Very Strong'];
+  var colors = ['', 'danger', 'warning', 'warning', 'success', 'success'];
+  var missing = [];
+  if (!ok[0]) missing.push('8+ characters');
+  if (!ok[1]) missing.push('uppercase');
+  if (!ok[2]) missing.push('lowercase');
+  if (!ok[3]) missing.push('number');
+  if (!ok[4]) missing.push('special character');
+  el.innerHTML = '<span class="text-' + colors[score] + '">' + labels[score] + '</span>'
+    + (missing.length ? ' — missing: ' + missing.join(', ') : '');
+}
+</script>
+}

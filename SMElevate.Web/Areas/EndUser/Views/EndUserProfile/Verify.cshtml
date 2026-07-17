@@ -1,0 +1,16 @@
+@model SMElevate.Web.Areas.EndUser.ViewModels.TokenVerifyViewModel
+@{Layout = null; ViewData["Title"] = "Verify Your Account";}
+<!doctype html><html><head><meta charset="utf-8"/><title>Verify - SMElevate</title><link href="~/dist/css/tabler.css" rel="stylesheet"/><link href="~/dist/css/tabler-themes.css" rel="stylesheet"/></head>
+<body><script src="~/dist/js/tabler-theme.min.js"></script>
+<div class="page page-center"><div class="container container-tight py-4">
+  <div class="text-center mb-4"><span class="h1 mb-0 text-primary">SMElevate</span></div>
+  <form method="post" asp-area="EndUser" asp-controller="EndUserProfile" asp-action="Verify" asp-antiforgery="true" class="card card-md" novalidate>@Html.AntiForgeryToken()
+    <div class="card-body">
+      <h2 class="card-title text-center mb-2">Verify Your Account</h2>
+      <p class="text-secondary text-center mb-4">A verification token has been sent to your registered business email/mobile number.</p>
+      @if (!ViewData.ModelState.IsValid) {<div class="alert alert-danger" role="alert">@string.Join(" ", ViewData.ModelState.Values.SelectMany(v=>v.Errors).Select(e=>e.ErrorMessage))</div>}
+      <div class="mb-3"><label class="form-label">Verification Token</label><input asp-for="Token" class="form-control form-control-lg text-center" maxlength="6" inputmode="text" placeholder="Enter 6-character token" /></div>
+      <div class="form-footer"><button type="submit" class="btn btn-primary w-100">Verify</button></div>
+    </div>
+  </form>
+</div></div><script src="~/dist/js/tabler.min.js" defer></script></body></html>

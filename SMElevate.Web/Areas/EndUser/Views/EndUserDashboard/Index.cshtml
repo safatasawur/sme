@@ -1,0 +1,109 @@
+@model SMElevate.Web.Areas.EndUser.ViewModels.EndUserDashboardViewModel
+<div class="row row-cards mb-3">
+  <div class="col-sm-6 col-lg-3">
+    <div class="card card-sm">
+      <div class="card-body">
+        <div class="fw-medium fs-2">@Model.TotalApplications</div>
+        <div class="text-secondary">Total Applications</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card card-sm">
+      <div class="card-body">
+        <div class="fw-medium fs-2 text-yellow">@Model.DraftApplications</div>
+        <div class="text-secondary">Drafts</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card card-sm @(Model.PendingActions > 0 ? "border-warning" : "")">
+      <div class="card-body">
+        <div class="fw-medium fs-2 @(Model.PendingActions > 0 ? "text-warning" : "")">@Model.PendingActions</div>
+        <div class="text-secondary">Pending Actions</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card card-sm">
+      <div class="card-body">
+        <div class="fw-medium fs-2 text-green">@Model.DisbursedApplications</div>
+        <div class="text-secondary">Disbursed / Completed</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+@if (Model.ActiveOffers > 0) {
+<div class="alert alert-success mb-3">
+  <strong>@Model.ActiveOffers conditional offer@(Model.ActiveOffers > 1 ? "s" : "") awaiting your response.</strong>
+  Check your applications below.
+</div>
+}
+
+<div class="row row-deck row-cards">
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">My Applications</h3>
+        <div class="card-actions">
+          <a asp-area="EndUser" asp-controller="EndUserLoanRequests" asp-action="MyApplications" class="btn btn-2">View All</a>
+          <a asp-area="EndUser" asp-controller="EndUserLoanRequests" asp-action="Create" class="btn btn-primary ms-2">New Application</a>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-vcenter card-table">
+          <thead><tr><th>Reference</th><th>Business</th><th>Bank</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+          <tbody>
+            @foreach (var r in Model.RecentApplications) {
+            <tr>
+              <td>
+                <a asp-area="EndUser" asp-controller="EndUserLoanRequests" asp-action="Detail" asp-route-requestNo="@r.RequestNo">
+                  @(r.CaseId ?? r.RequestNo)
+                </a>
+              </td>
+              <td>@r.NameOfBusiness</td>
+              <td>@(r.AssignedBank?.BankName ?? "—")</td>
+              <td>Rs. @r.Amount.ToString("N0")</td>
+              <td>
+                <span class="badge bg-azure-lt">@(r.Status?.ValueText ?? "Draft")</span>
+              </td>
+              <td class="text-secondary small">@(r.SubmittedAt?.ToString("yyyy-MM-dd") ?? r.CreatedAt.ToString("yyyy-MM-dd"))</td>
+            </tr>
+            }
+            @if (!Model.RecentApplications.Any()) {
+            <tr><td colspan="6" class="text-center text-secondary py-3">
+              No applications yet. <a asp-area="EndUser" asp-controller="EndUserLoanRequests" asp-action="Create">Apply now</a>.
+            </td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">
+          Notifications
+          @if (Model.UnreadNotifications > 0) { <span class="badge bg-red ms-1">@Model.UnreadNotifications</span> }
+        </h3>
+        <div class="card-actions">
+          <a asp-area="EndUser" asp-controller="EndUserNotifications" asp-action="Index" class="btn btn-2">View All</a>
+        </div>
+      </div>
+      <div class="list-group list-group-flush">
+        @foreach (var n in Model.RecentNotifications) {
+        <div class="list-group-item @(!n.IsRead ? "fw-semibold" : "")">
+          <div>@n.Title</div>
+          <div class="text-secondary small">@n.Message</div>
+          <div class="text-muted small">@n.CreatedAt.ToString("yyyy-MM-dd HH:mm")</div>
+        </div>
+        }
+        @if (!Model.RecentNotifications.Any()) {
+        <div class="list-group-item text-secondary">No notifications.</div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

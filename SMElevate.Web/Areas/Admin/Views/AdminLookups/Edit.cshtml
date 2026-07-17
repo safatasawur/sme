@@ -1,0 +1,22 @@
+@model SMElevate.Web.Areas.Admin.ViewModels.LookupFormViewModel
+<form method="post" asp-antiforgery="true" class="card" novalidate>
+  <div class="card-body">
+    <div asp-validation-summary="All" class="alert alert-danger d-none @(ViewData.ModelState.IsValid ? "" : "d-block")"></div>
+    <div class="row">
+      <div class="col-md-6 mb-3"><label class="form-label required">Lookup Name</label><input asp-for="LookupName" class="form-control" /></div>
+      <div class="col-md-6 mb-3"><label class="form-label required">Lookup Code</label><input asp-for="LookupCode" class="form-control" /></div>
+    </div>
+    <div class="mb-3"><label class="form-label">Description</label><input asp-for="Description" class="form-control" /></div>
+    <div class="mb-3"><label class="form-label">Active</label><label class="form-check"><input asp-for="IsActive" type="checkbox" class="form-check-input" /><span class="form-check-label">Active</span></label></div>
+  </div>
+  <div class="card-header"><h3 class="card-title">Lookup Values</h3></div>
+  <div class="card-body" id="values-container">
+    @for (int i = 0; i < Math.Max(1, Model.Values.Count); i++) {
+    <div class="row align-items-center mb-2"><div class="col"><input type="text" name="valueTexts" class="form-control" placeholder="Value" value="@(i < Model.Values.Count ? Model.Values[i].ValueText : "")" /></div>
+    <div class="col-auto"><button type="button" class="btn btn-icon btn-outline-danger btn-remove-value" onclick="this.closest('.row').remove()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1"><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg></button></div></div>}
+  </div>
+  <div class="card-body pt-0">
+    <button type="button" class="btn btn-2" onclick="var r=document.createElement('div');r.className='row align-items-center mb-2';r.innerHTML='<div class=col><input type=text name=valueTexts class=form-control placeholder=Value /></div><div class=col-auto><button type=button class=\'btn btn-icon btn-outline-danger\' onclick=\'this.closest(&quot;.row&quot;).remove()\'>&times;</button></div>';document.getElementById('values-container').appendChild(r);">+ Add Value</button>
+  </div>
+  <div class="card-footer text-end"><a asp-area="Admin" asp-controller="AdminLookups" asp-action="Index" class="btn btn-2 me-2">Cancel</a><button type="submit" class="btn btn-primary">Save Lookup</button></div>
+</form>

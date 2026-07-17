@@ -1,0 +1,49 @@
+@{
+    Layout = null;
+    ViewData["Title"] = "SMElevate - Select Portal";
+}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>@ViewData["Title"]</title>
+  <link href="~/dist/css/tabler.css" rel="stylesheet" />
+  <link href="~/dist/css/tabler-themes.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="page page-center">
+    <div class="container container-tight py-4">
+      <div class="text-center mb-4">
+        <span class="h1 text-primary">SMElevate</span>
+        <div class="text-secondary mt-1">Digital Portal for Financing to Business Enterprises</div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title text-center mb-4">Select Your Portal</h2>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <a asp-area="Admin" asp-controller="AdminAuth" asp-action="Login" class="card card-link card-sm text-center p-3">
+                <div class="fw-bold mb-1">Admin Portal</div>
+                <div class="text-secondary small">System Administration</div>
+              </a>
+            </div>
+            <div class="col-md-4">
+              <a asp-area="Banks" asp-controller="BankAuth" asp-action="Login" class="card card-link card-sm text-center p-3">
+                <div class="fw-bold mb-1">Banks Portal</div>
+                <div class="text-secondary small">Bank Users</div>
+              </a>
+            </div>
+            <div class="col-md-4">
+              <a asp-area="EndUser" asp-controller="EndUserAccount" asp-action="Login" class="card card-link card-sm text-center p-3">
+                <div class="fw-bold mb-1">SME Portal</div>
+                <div class="text-secondary small">Loan Applicants</div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="~/dist/js/tabler.min.js" defer></script>
+</body>
+</html>

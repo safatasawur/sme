@@ -1,0 +1,21 @@
+@model SMElevate.Web.Areas.Banks.ViewModels.OtpVerifyViewModel
+@{Layout = null; ViewData["Title"] = "Verify OTP";}
+<!doctype html><html><head><meta charset="utf-8"/><title>Verify OTP - SMElevate</title><link href="~/dist/css/tabler.css" rel="stylesheet"/></head>
+<body><script src="~/dist/js/tabler-theme.min.js"></script>
+<div class="page page-center"><div class="container container-tight py-4">
+  <div class="text-center mb-4"><span class="h1 mb-0 text-primary">SMElevate</span><div class="text-secondary mt-1">Banks Portal</div></div>
+  <div class="card card-md"><div class="card-body">
+    <h2 class="h2 text-center mb-2">Verify OTP</h2>
+    <p class="text-secondary text-center mb-4">An OTP has been sent to your registered bank email address: <strong>@ViewBag.PendingEmail</strong>.</p>
+    @if (!ViewData.ModelState.IsValid) {<div class="alert alert-danger" role="alert">@string.Join(" ", ViewData.ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage))</div>}
+    @if (TempData["Success"] is string s) {<div class="alert alert-success" role="alert">@s</div>}
+    <form method="post" asp-area="Banks" asp-controller="BankAuth" asp-action="VerifyOtp" asp-antiforgery="true" novalidate>@Html.AntiForgeryToken()
+      <input type="hidden" asp-for="PendingEmail" />
+      <div class="mb-3"><label class="form-label required">Enter OTP</label><input asp-for="Otp" type="text" class="form-control form-control-lg text-center" maxlength="6" inputmode="numeric" placeholder="6-digit OTP" /><small class="form-hint">The OTP expires in 10 minutes.</small></div>
+      <div class="form-footer"><div class="btn-list flex-nowrap">
+        <button formaction="/Banks/BankAuth/ResendOtp" formmethod="post" type="submit" class="btn btn-3 w-100">Resend OTP</button>
+        <button type="submit" class="btn btn-primary btn-3 w-100">Verify</button>
+      </div></div>
+    </form>
+  </div></div>
+</div></div><script src="~/dist/js/tabler.min.js" defer></script></body></html>

@@ -1,0 +1,48 @@
+@model SMElevate.Web.Areas.Banks.ViewModels.CreateInfoRequestViewModel
+@{ var request = ViewBag.Request as SMElevate.Web.Models.Common.LoanRequest; }
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="row align-items-center">
+      <div class="col"><div class="text-secondary">Application</div><div class="h3 mb-0">@(request?.CaseId ?? request?.RequestNo)</div></div>
+      <div class="col-auto"><span class="badge fs-4 p-2 bg-azure-lt">@(request?.Status?.ValueText ?? "—")</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <form asp-area="Banks" asp-controller="BankAdditionalInfo" asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="LoanRequestId" />
+    <div class="card-header"><h3 class="card-title">Request Additional Information</h3></div>
+    <div class="card-body">
+      <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+      <div class="mb-3">
+        <label asp-for="Title" class="form-label required">Title / Subject</label>
+        <input asp-for="Title" class="form-control" placeholder="e.g. Missing audited accounts" />
+        <span asp-validation-for="Title" class="text-danger small"></span>
+      </div>
+      <div class="mb-3">
+        <label asp-for="Description" class="form-label required">Description</label>
+        <textarea asp-for="Description" class="form-control" rows="4" placeholder="Detailed description of what information is required and why"></textarea>
+        <span asp-validation-for="Description" class="text-danger small"></span>
+      </div>
+      <div class="mb-3">
+        <label asp-for="RequiredDocuments" class="form-label">Required Documents</label>
+        <textarea asp-for="RequiredDocuments" class="form-control" rows="2" placeholder="List required documents (one per line or comma-separated)"></textarea>
+      </div>
+      <div class="mb-3">
+        <label asp-for="DueDate" class="form-label">Due Date</label>
+        <input asp-for="DueDate" type="date" class="form-control" />
+        <small class="form-hint">Leave blank for no specific deadline.</small>
+      </div>
+    </div>
+    <div class="card-footer text-end">
+      <a asp-area="Banks" asp-controller="BankRequests" asp-action="Detail" asp-route-id="@Model.LoanRequestId" class="btn btn-2 me-2">Cancel</a>
+      <button type="submit" class="btn btn-warning">Send Information Request</button>
+    </div>
+  </form>
+</div>
+
+@section HeaderActions {
+  <a asp-area="Banks" asp-controller="BankRequests" asp-action="Detail" asp-route-id="@Model.LoanRequestId" class="btn btn-2">Back to Application</a>
+}

@@ -1,0 +1,75 @@
+SMElevate V2 – Loan Request Form Fields (End User)
+====================================================
+Source: SchemeFormFields table (live database, 2026-07-15)
+Form is dynamic — fields are loaded per Financing Scheme selected.
+
+Fields are listed in the order they appear on screen (Section Order → Display Order).
+R = Required   O = Optional
+
+──────────────────────────────────────────────────────────────────────
+SECTION 1: Business Details  (SectionOrder = 1)
+──────────────────────────────────────────────────────────────────────
+#   FieldName               FieldLabel                       Type              Req
+1   NameOfBusiness          Name of Business                 text              R
+2   ContactPerson           Contact Person                   text              R
+3   CellOrLandlineNo        Cell / Landline No.              text              R
+4   NTNNo                   NTN No. (If applicable)          text              O
+5   BusinessAddress         Business Address                 textarea          R
+6   AnnualSales             Annual Sales (Rs.)               number            R
+7   YearOfEstablishment     Year of Establishment            number            R
+8   NoOfEmployees           No. of Employees                 number            R
+9   BusinessPremise         Business Premise                 radio             R
+10  IsBusinessRegistered    Business Registration            radio             R
+11  RegistrationAuthority   Registration Authority           text              O
+12  BusinessStatus          Business Status                  select            R
+13  BusinessNature          Business Nature                  select            R
+14  BusinessDescription     Business Description             textarea          R
+
+──────────────────────────────────────────────────────────────────────
+SECTION 2: Shareholding Details  (SectionOrder = 2)
+──────────────────────────────────────────────────────────────────────
+#   FieldName               FieldLabel                       Type              Req
+1   Shareholders            Individual / Shareholding        shareholder_group O
+
+  Each shareholder row collects:
+    - Name                  (text, required per row)
+    - ContactNo             (text, format: 03xxxxxxxxx)
+    - Email                 (email)
+    - CNIC                  (text, format: xxxxx-xxxxxxx-x)
+    - ShareholdingPercentage (number, 0–100)
+
+──────────────────────────────────────────────────────────────────────
+SECTION 3: Facility Requested  (SectionOrder = 3)
+──────────────────────────────────────────────────────────────────────
+#   FieldName               FieldLabel                       Type              Req
+1   FacilityRequested       Facility Requested               select            R
+2   TypeOfFacility          Type of Facility                 select            R
+3   Amount                  Amount (Rs.)                     number            R
+4   Tenor                   Tenor (Months)                   number            R
+
+──────────────────────────────────────────────────────────────────────
+SECTION 4: Bank Details  (SectionOrder = 4)
+──────────────────────────────────────────────────────────────────────
+#   FieldName               FieldLabel                       Type              Req
+1   AssignedBankId          Select Bank                      bank_select       R
+2   IBANOrRaastType         Payment Identifier Type          select            R
+3   IBANOrRaastValue        IBAN / RAAST ID                  text              R
+
+──────────────────────────────────────────────────────────────────────
+HIDDEN / SYSTEM FIELDS (posted with the form, not shown to user)
+──────────────────────────────────────────────────────────────────────
+SchemeId        — ID of the selected Financing Scheme
+SchemeFormId    — ID of the active published form version
+FieldValuesJson — JSON array of { fieldName, fieldValue } for all dynamic fields
+
+──────────────────────────────────────────────────────────────────────
+NOTES
+──────────────────────────────────────────────────────────────────────
+- Fields are configurable in Admin → Scheme Forms. The above reflects
+  the default seeded form for the standard scheme.
+- Conditional fields (HasConditionalVisibility = true) are hidden until
+  a trigger field matches the ConditionalExpression (e.g. "FieldName = Value").
+- bank_select fields post as AssignedBankId (integer FK to Banks table).
+- Dynamic field values are stored in LoanRequestFieldValues table.
+  Core LoanRequest columns (NameOfBusiness, Amount, etc.) are also
+  mapped directly from FieldName by the controller.

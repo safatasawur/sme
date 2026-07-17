@@ -1,0 +1,203 @@
+@using SMElevate.Web.Models.Common
+@{
+    var request = ViewBag.Request as LoanRequest;
+    var assessments = ViewBag.Assessments as List<BankAssessment> ?? new();
+    int loanRequestId = ViewBag.LoanRequestId;
+
+    BankAssessment? GetA(string t) => assessments.FirstOrDefault(a => a.AssessmentType == t);
+    string Cls(string? s) => s == AssessmentStatus.Completed ? "bg-green-lt" : s == AssessmentStatus.InProgress ? "bg-yellow-lt" : "bg-secondary-lt";
+}
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="row align-items-center">
+      <div class="col"><div class="text-secondary">Application</div><div class="h3 mb-0">@(request?.CaseId ?? request?.RequestNo)</div></div>
+      <div class="col-auto"><span class="badge fs-4 p-2 bg-azure-lt">@(request?.Status?.ValueText ?? "—")</span></div>
+    </div>
+  </div>
+</div>
+
+<ul class="nav nav-tabs mb-3" id="assessmentTabs">
+  <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab-credit">Credit Bureau Check</a></li>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-risk">Risk Assessment</a></li>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-cdd">CDD / Compliance</a></li>
+</ul>
+
+<div class="tab-content">
+  @* ── Credit Bureau Check ── *@
+  <div class="tab-pane active" id="tab-credit">
+    @{ var cb = GetA(AssessmentType.CreditBureauCheck); }
+    <div class="row row-cards">
+      @if (cb != null) {
+      <div class="col-md-4">
+        <div class="card"><div class="card-header"><h3 class="card-title">Current</h3></div><div class="card-body">
+          <div class="datagrid">
+            <div class="datagrid-item"><div class="datagrid-title">Status</div><div class="datagrid-content"><span class="badge @Cls(cb.Status)">@cb.Status</span></div></div>
+            <div class="datagrid-item"><div class="datagrid-title">Check Date</div><div class="datagrid-content">@(cb.CheckDate?.ToString("yyyy-MM-dd") ?? "—")</div></div>
+            <div class="datagrid-item"><div class="datagrid-title">Reference No.</div><div class="datagrid-content">@(cb.ReferenceNumber ?? "—")</div></div>
+            <div class="datagrid-item"><div class="datagrid-title">Result Summary</div><div class="datagrid-content">@(cb.ResultSummary ?? "—")</div></div>
+            <div class="datagrid-item"><div class="datagrid-title">Remarks</div><div class="datagrid-content">@(cb.Remarks ?? "—")</div></div>
+          </div>
+        </div></div>
+      </div>
+      }
+      <div class="col-md-@(cb != null ? "8" : "12")">
+        <form asp-area="Banks" asp-controller="BankAssessment" asp-action="Save" method="post" enctype="multipart/form-data" class="card">
+          @Html.AntiForgeryToken()
+          <input type="hidden" name="LoanRequestId" value="@loanRequestId" />
+          <input type="hidden" name="AssessmentType" value="@AssessmentType.CreditBureauCheck" />
+          <div class="card-header"><h3 class="card-title">@(cb != null ? "Update" : "Record") Credit Bureau Check</h3></div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label required">Status</label>
+                <select name="Status" class="form-select">
+                  <option value="@AssessmentStatus.InProgress" selected="@(cb?.Status==AssessmentStatus.InProgress ? "selected" : null)">In Progress</option>
+                  <option value="@AssessmentStatus.Completed" selected="@(cb?.Status==AssessmentStatus.Completed ? "selected" : null)">Completed</option>
+                  <option value="@AssessmentStatus.Failed" selected="@(cb?.Status==AssessmentStatus.Failed ? "selected" : null)">Failed</option>
+                </select>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Check Date</label>
+                <input type="date" name="CheckDate" value="@(cb?.CheckDate?.ToString("yyyy-MM-dd"))" class="form-control" />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Reference Number</label>
+                <input type="text" name="ReferenceNumber" value="@cb?.ReferenceNumber" class="form-control" />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Result Summary</label>
+                <input type="text" name="ResultSummary" value="@cb?.ResultSummary" class="form-control" />
+              </div>
+              <div class="col-md-12 mb-3">
+                <label class="form-label">Remarks</label>
+                <textarea name="Remarks" class="form-control" rows="2">@cb?.Remarks</textarea>
+              </div>
+              <div class="col-md-12 mb-3">
+                <label class="form-label">Attachment</label>
+                <input type="file" name="Attachment" class="form-control" />
+              </div>
+            </div>
+          </div>
+          <div class="card-footer text-end"><button type="submit" class="btn btn-primary">Save</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  @* ── Risk Assessment ── *@
+  <div class="tab-pane" id="tab-risk">
+    @{ var ra = GetA(AssessmentType.RiskAssessment); }
+    <div class="row row-cards">
+      @if (ra != null) {
+      <div class="col-md-4">
+        <div class="card"><div class="card-header"><h3 class="card-title">Current</h3></div><div class="card-body">
+          <div class="datagrid">
+            <div class="datagrid-item"><div class="datagrid-title">Status</div><div class="datagrid-content"><span class="badge @Cls(ra.Status)">@ra.Status</span></div></div>
+            <div class="datagrid-item"><div class="datagrid-title">Scorecard Ref</div><div class="datagrid-content">@(ra.ScorecardReference ?? "—")</div></div>
+            <div class="datagrid-item"><div class="datagrid-title">Result</div><div class="datagrid-content">@(ra.Result ?? "—")</div></div>
+            <div class="datagrid-item"><div class="datagrid-title">Risk Category</div><div class="datagrid-content">@(ra.RiskCategory ?? "—")</div></div>
+            <div class="datagrid-item"><div class="datagrid-title">Remarks</div><div class="datagrid-content">@(ra.Remarks ?? "—")</div></div>
+          </div>
+        </div></div>
+      </div>
+      }
+      <div class="col-md-@(ra != null ? "8" : "12")">
+        <form asp-area="Banks" asp-controller="BankAssessment" asp-action="Save" method="post" enctype="multipart/form-data" class="card">
+          @Html.AntiForgeryToken()
+          <input type="hidden" name="LoanRequestId" value="@loanRequestId" />
+          <input type="hidden" name="AssessmentType" value="@AssessmentType.RiskAssessment" />
+          <div class="card-header"><h3 class="card-title">@(ra != null ? "Update" : "Record") Risk Assessment</h3></div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label required">Status</label>
+                <select name="Status" class="form-select">
+                  <option value="@AssessmentStatus.InProgress" selected="@(ra?.Status==AssessmentStatus.InProgress ? "selected" : null)">In Progress</option>
+                  <option value="@AssessmentStatus.Completed" selected="@(ra?.Status==AssessmentStatus.Completed ? "selected" : null)">Completed</option>
+                  <option value="@AssessmentStatus.Failed" selected="@(ra?.Status==AssessmentStatus.Failed ? "selected" : null)">Failed</option>
+                </select>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Assessment Date</label>
+                <input type="date" name="AssessmentDate" value="@(ra?.AssessmentDate?.ToString("yyyy-MM-dd"))" class="form-control" />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Scorecard Reference</label>
+                <input type="text" name="ScorecardReference" value="@ra?.ScorecardReference" class="form-control" />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Result</label>
+                <input type="text" name="Result" value="@ra?.Result" class="form-control" placeholder="e.g. Pass / Refer / Decline" />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Risk Category</label>
+                <input type="text" name="RiskCategory" value="@ra?.RiskCategory" class="form-control" placeholder="e.g. Low / Medium / High" />
+              </div>
+              <div class="col-md-12 mb-3">
+                <label class="form-label">Remarks</label>
+                <textarea name="Remarks" class="form-control" rows="2">@ra?.Remarks</textarea>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer text-end"><button type="submit" class="btn btn-primary">Save</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  @* ── CDD / Compliance ── *@
+  <div class="tab-pane" id="tab-cdd">
+    @{ var cdd = GetA(AssessmentType.CDDCompliance); }
+    <div class="row row-cards">
+      @if (cdd != null) {
+      <div class="col-md-4">
+        <div class="card"><div class="card-header"><h3 class="card-title">Current</h3></div><div class="card-body">
+          <div class="datagrid">
+            <div class="datagrid-item"><div class="datagrid-title">Status</div><div class="datagrid-content"><span class="badge @Cls(cdd.Status)">@cdd.Status</span></div></div>
+            <div class="datagrid-item"><div class="datagrid-title">CDD Status</div><div class="datagrid-content">@(cdd.CDDStatus ?? "—")</div></div>
+            <div class="datagrid-item"><div class="datagrid-title">KYC Status</div><div class="datagrid-content">@(cdd.KYCStatus ?? "—")</div></div>
+            <div class="datagrid-item"><div class="datagrid-title">AML Status</div><div class="datagrid-content">@(cdd.AMLStatus ?? "—")</div></div>
+            <div class="datagrid-item"><div class="datagrid-title">Compliance Result</div><div class="datagrid-content">@(cdd.ComplianceResult ?? "—")</div></div>
+          </div>
+        </div></div>
+      </div>
+      }
+      <div class="col-md-@(cdd != null ? "8" : "12")">
+        <form asp-area="Banks" asp-controller="BankAssessment" asp-action="Save" method="post" enctype="multipart/form-data" class="card">
+          @Html.AntiForgeryToken()
+          <input type="hidden" name="LoanRequestId" value="@loanRequestId" />
+          <input type="hidden" name="AssessmentType" value="@AssessmentType.CDDCompliance" />
+          <div class="card-header"><h3 class="card-title">@(cdd != null ? "Update" : "Record") CDD / Compliance</h3></div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label required">Status</label>
+                <select name="Status" class="form-select">
+                  <option value="@AssessmentStatus.InProgress" selected="@(cdd?.Status==AssessmentStatus.InProgress ? "selected" : null)">In Progress</option>
+                  <option value="@AssessmentStatus.Completed" selected="@(cdd?.Status==AssessmentStatus.Completed ? "selected" : null)">Completed</option>
+                  <option value="@AssessmentStatus.Failed" selected="@(cdd?.Status==AssessmentStatus.Failed ? "selected" : null)">Failed</option>
+                </select>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Completion Date</label>
+                <input type="date" name="CompletionDate" value="@(cdd?.CompletionDate?.ToString("yyyy-MM-dd"))" class="form-control" />
+              </div>
+              <div class="col-md-6 mb-3"><label class="form-label">CDD Status</label><input type="text" name="CDDStatus" value="@cdd?.CDDStatus" class="form-control" placeholder="Pass / Fail / Pending" /></div>
+              <div class="col-md-6 mb-3"><label class="form-label">KYC Status</label><input type="text" name="KYCStatus" value="@cdd?.KYCStatus" class="form-control" placeholder="Verified / Pending" /></div>
+              <div class="col-md-6 mb-3"><label class="form-label">AML Status</label><input type="text" name="AMLStatus" value="@cdd?.AMLStatus" class="form-control" placeholder="Clear / Flagged" /></div>
+              <div class="col-md-6 mb-3"><label class="form-label">Sanctions Screening</label><input type="text" name="SanctionsScreeningStatus" value="@cdd?.SanctionsScreeningStatus" class="form-control" placeholder="Clear / Hit" /></div>
+              <div class="col-md-6 mb-3"><label class="form-label">PEP Screening</label><input type="text" name="PEPScreeningStatus" value="@cdd?.PEPScreeningStatus" class="form-control" /></div>
+              <div class="col-md-6 mb-3"><label class="form-label">Compliance Result</label><input type="text" name="ComplianceResult" value="@cdd?.ComplianceResult" class="form-control" placeholder="Approved / Refer / Decline" /></div>
+              <div class="col-md-12 mb-3"><label class="form-label">Remarks</label><textarea name="Remarks" class="form-control" rows="2">@cdd?.Remarks</textarea></div>
+            </div>
+          </div>
+          <div class="card-footer text-end"><button type="submit" class="btn btn-primary">Save</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section HeaderActions {
+  <a asp-area="Banks" asp-controller="BankRequests" asp-action="Detail" asp-route-id="@loanRequestId" class="btn btn-2">Back to Application</a>
+}

@@ -1,0 +1,91 @@
+@model SMElevate.Web.Areas.EndUser.ViewModels.BusinessProfileDetailsViewModel
+@using SMElevate.Web.Models.Common
+@{
+  var b = Model.Profile;
+  var statusClass = b.BusinessVerificationStatus == BusinessVerificationStatus.Verified ? "bg-success-lt text-success"
+                  : b.BusinessVerificationStatus == BusinessVerificationStatus.PartiallyVerified ? "bg-warning-lt text-warning"
+                  : "bg-secondary-lt text-secondary";
+}
+
+@section HeaderActions {
+  <div class="d-flex gap-2">
+    <a asp-area="EndUser" asp-controller="BusinessProfiles" asp-action="Edit" asp-route-id="@b.Id" class="btn btn-outline-primary btn-sm">Edit</a>
+    @if (b.BusinessVerificationStatus != BusinessVerificationStatus.Verified)
+    {
+      <a asp-area="EndUser" asp-controller="BusinessProfiles" asp-action="Verify" asp-route-id="@b.Id" class="btn btn-warning btn-sm">Verify</a>
+    }
+    <a asp-area="EndUser" asp-controller="BusinessProfiles" asp-action="Delete" asp-route-id="@b.Id" class="btn btn-outline-danger btn-sm">Delete</a>
+  </div>
+}
+
+<div class="card mb-3">
+  <div class="card-header d-flex align-items-center">
+    <h4 class="card-title mb-0">@b.NameOfBusiness</h4>
+    <span class="badge @statusClass ms-3">@b.BusinessVerificationStatus</span>
+  </div>
+  <div class="card-body">
+    <div class="datagrid">
+      <div class="datagrid-item"><div class="datagrid-title">Owner CNIC</div><div class="datagrid-content">@b.OwnerCNIC</div></div>
+      <div class="datagrid-item"><div class="datagrid-title">Contact Person</div><div class="datagrid-content">@b.ContactPerson</div></div>
+      <div class="datagrid-item"><div class="datagrid-title">Mobile / Landline</div><div class="datagrid-content">@b.CellOrLandlineNo <span class="badge @(b.IsBusinessMobileVerified ? "bg-success-lt" : "bg-secondary-lt")">@(b.IsBusinessMobileVerified ? "Verified" : "Unverified")</span></div></div>
+      <div class="datagrid-item"><div class="datagrid-title">Business Email</div><div class="datagrid-content">@b.BusinessEmailAddress <span class="badge @(b.IsBusinessEmailVerified ? "bg-success-lt" : "bg-secondary-lt")">@(b.IsBusinessEmailVerified ? "Verified" : "Unverified")</span></div></div>
+      <div class="datagrid-item"><div class="datagrid-title">NTN No.</div><div class="datagrid-content">@(b.NTNNo ?? "N/A")</div></div>
+      <div class="datagrid-item"><div class="datagrid-title">Business Address</div><div class="datagrid-content">@b.BusinessAddress</div></div>
+      <div class="datagrid-item"><div class="datagrid-title">Annual Sales</div><div class="datagrid-content">Rs. @b.AnnualSales.ToString("N0")</div></div>
+      <div class="datagrid-item"><div class="datagrid-title">Year Established</div><div class="datagrid-content">@b.YearOfEstablishment</div></div>
+      <div class="datagrid-item"><div class="datagrid-title">Employees</div><div class="datagrid-content">@b.NoOfEmployees</div></div>
+      <div class="datagrid-item"><div class="datagrid-title">Business Premise</div><div class="datagrid-content">@b.BusinessPremise</div></div>
+      <div class="datagrid-item"><div class="datagrid-title">Registered</div><div class="datagrid-content">@(b.IsBusinessRegistered ? "Yes" : "No") @(!string.IsNullOrEmpty(b.RegistrationAuthority) ? $"({b.RegistrationAuthority})" : "")</div></div>
+      <div class="datagrid-item"><div class="datagrid-title">Business Status</div><div class="datagrid-content">@b.BusinessStatus</div></div>
+      <div class="datagrid-item"><div class="datagrid-title">Nature of Business</div><div class="datagrid-content">@b.BusinessNature</div></div>
+      <div class="datagrid-item"><div class="datagrid-title">Description</div><div class="datagrid-content">@b.BusinessDescription</div></div>
+    </div>
+  </div>
+</div>
+
+@if (b.BusinessBank is not null || !string.IsNullOrEmpty(b.BusinessIBAN))
+{
+  <div class="card mb-3">
+    <div class="card-header"><h4 class="card-title mb-0">Bank Detail</h4></div>
+    <div class="card-body">
+      <div class="datagrid">
+        @if (b.BusinessBank is not null)
+        {
+          <div class="datagrid-item"><div class="datagrid-title">Bank</div><div class="datagrid-content">@b.BusinessBank.BankName</div></div>
+        }
+        @if (!string.IsNullOrEmpty(b.BusinessIBAN))
+        {
+          <div class="datagrid-item"><div class="datagrid-title">IBAN</div><div class="datagrid-content"><code>@b.BusinessIBAN</code></div></div>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+@if (b.Shareholders.Any())
+{
+  <div class="card">
+    <div class="card-header"><h4 class="card-title mb-0">Shareholders / Partners</h4></div>
+    <div class="table-responsive">
+      <table class="table table-vcenter">
+        <thead><tr><th>Name</th><th>Contact No.</th><th>Email</th><th>CNIC</th><th>Share %</th></tr></thead>
+        <tbody>
+          @foreach (var s in b.Shareholders)
+          {
+            <tr>
+              <td>@s.Name</td>
+              <td>@s.ContactNo</td>
+              <td>@s.Email</td>
+              <td>@s.CNIC</td>
+              <td>@s.ShareholdingPercentage.ToString("N2")%</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}
+
+<div class="mt-3">
+  <a asp-area="EndUser" asp-controller="BusinessProfiles" asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+</div>

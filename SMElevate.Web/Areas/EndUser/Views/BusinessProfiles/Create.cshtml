@@ -1,0 +1,14 @@
+@model SMElevate.Web.Areas.EndUser.ViewModels.BusinessProfileCreateViewModel
+<form asp-area="EndUser" asp-controller="BusinessProfiles" asp-action="Create" method="post">
+  @Html.AntiForgeryToken()
+  <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3"></div>
+  @await Html.PartialAsync("_BusinessForm", (SMElevate.Web.Areas.EndUser.ViewModels.BusinessProfileFormViewModel)Model)
+  <div class="d-flex gap-2">
+    <button type="submit" class="btn btn-primary">Save & Continue to Verification</button>
+    <a asp-area="EndUser" asp-controller="BusinessProfiles" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+  </div>
+</form>
+
+@section Scripts {
+  @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,102 @@
+@model SMElevate.Web.Areas.Banks.ViewModels.BankFormalDecisionViewModel
+@using SMElevate.Web.Models.Common
+@{
+    var request = ViewBag.Request as LoanRequest;
+    var existing = ViewBag.ExistingDecision as BankDecision;
+}
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="row align-items-center">
+      <div class="col"><div class="text-secondary">Application</div><div class="h3 mb-0">@(request?.CaseId ?? request?.RequestNo)</div></div>
+      <div class="col-auto"><span class="badge fs-4 p-2 bg-azure-lt">@(request?.Status?.ValueText ?? "—")</span></div>
+    </div>
+  </div>
+</div>
+
+@if (existing != null) {
+<div class="card mb-3">
+  <div class="card-header"><h3 class="card-title">Existing Decision</h3></div>
+  <div class="card-body">
+    <div class="datagrid">
+      <div class="datagrid-item"><div class="datagrid-title">Type</div><div class="datagrid-content"><span class="badge @(existing.DecisionType == DecisionType.Declined ? "bg-red-lt" : "bg-green-lt")">@existing.DecisionType</span></div></div>
+      <div class="datagrid-item"><div class="datagrid-title">Date</div><div class="datagrid-content">@existing.DecisionDate.ToString("yyyy-MM-dd")</div></div>
+      @if (existing.ApprovedAmount.HasValue && existing.ApprovedAmount.Value > 0) {
+      <div class="datagrid-item"><div class="datagrid-title">Approved Amount</div><div class="datagrid-content">Rs. @existing.ApprovedAmount.Value.ToString("N0")</div></div>
+      <div class="datagrid-item"><div class="datagrid-title">Approved Tenor</div><div class="datagrid-content">@(existing.ApprovedTenorMonths.HasValue ? $"{existing.ApprovedTenorMonths.Value} months" : "—")</div></div>
+      }
+      <div class="datagrid-item"><div class="datagrid-title">Remarks</div><div class="datagrid-content">@(existing.DecisionRemarks ?? "—")</div></div>
+    </div>
+  </div>
+</div>
+}
+
+<div class="card">
+  <form asp-area="Banks" asp-controller="BankDecision" asp-action="Record" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="LoanRequestId" />
+    <div class="card-header"><h3 class="card-title">@(existing != null ? "Amend" : "Record") Formal Decision</h3></div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label required">Decision Type</label>
+          <select asp-for="DecisionType" class="form-select" id="decisionType" onchange="toggleDecisionFields()">
+            <option value="">Select decision…</option>
+            <option value="ConditionallyApproved" selected="@(Model.DecisionType == DecisionType.ConditionallyApproved ? "selected" : null)">Conditionally Approved</option>
+            <option value="Declined" selected="@(Model.DecisionType == DecisionType.Declined ? "selected" : null)">Declined</option>
+          </select>
+        </div>
+        <div class="col-md-6 mb-3" id="reasonCodeField" style="display:none">
+          <label class="form-label required">Decline Reason Code</label>
+          <select asp-for="DeclineReasonCodeId" class="form-select">
+            <option value="">Select reason…</option>
+            @foreach (var rc in Model.ReasonCodes) {
+            <option value="@rc.Id" selected="@(Model.DeclineReasonCodeId == rc.Id ? "selected" : null)">[@rc.Code] @rc.Description</option>
+            }
+          </select>
+        </div>
+        <div class="col-md-6 mb-3" id="approvedAmountField">
+          <label class="form-label">Approved Amount (Rs.)</label>
+          <input type="number" asp-for="ApprovedAmount" class="form-control" step="1000" />
+        </div>
+        <div class="col-md-3 mb-3" id="tenorField">
+          <label class="form-label">Approved Tenor (months)</label>
+          <input type="number" asp-for="ApprovedTenorMonths" class="form-control" min="1" max="360" />
+        </div>
+        <div class="col-md-3 mb-3" id="facilityTypeField">
+          <label class="form-label">Approved Facility Type</label>
+          <input type="text" asp-for="ApprovedFacilityType" class="form-control" />
+        </div>
+        <div class="col-md-12 mb-3">
+          <label class="form-label">Additional Conditions</label>
+          <textarea asp-for="AdditionalConditions" class="form-control" rows="2"></textarea>
+        </div>
+        <div class="col-md-12 mb-3">
+          <label class="form-label">Decision Remarks</label>
+          <textarea asp-for="DecisionRemarks" class="form-control" rows="3"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer text-end">
+      <a asp-area="Banks" asp-controller="BankRequests" asp-action="Assigned" class="btn btn-2 me-2">Cancel</a>
+      <button type="submit" class="btn btn-primary">Record Decision</button>
+    </div>
+  </form>
+</div>
+
+@section HeaderActions {
+  <a asp-area="Banks" asp-controller="BankRequests" asp-action="Detail" asp-route-id="@Model.LoanRequestId" class="btn btn-2">Back to Application</a>
+}
+@section Scripts {
+<script>
+function toggleDecisionFields() {
+  var dt = document.getElementById('decisionType').value;
+  var isDeclined = dt === 'Declined';
+  var isApproved = dt === 'ConditionallyApproved';
+  document.getElementById('reasonCodeField').style.display = isDeclined ? '' : 'none';
+  document.getElementById('approvedAmountField').style.display = isApproved ? '' : 'none';
+  document.getElementById('tenorField').style.display = isApproved ? '' : 'none';
+  document.getElementById('facilityTypeField').style.display = isApproved ? '' : 'none';
+}
+toggleDecisionFields();
+</script>
+}

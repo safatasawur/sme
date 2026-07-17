@@ -1,0 +1,31 @@
+sequenceDiagram
+    participant SME as SME Browser
+    participant C as EndUserAccountController
+    participant AS as AuthService
+    participant US as UserService
+    participant DB as SQL Server
+    participant EA as AuditService
+
+    SME->>C: POST /EndUser/EndUserAccount/Login (email, password)
+    C->>US: GetByEmailAsync(email)
+    US->>DB: SELECT * FROM ApplicationUsers WHERE EmailAddress=?
+    DB-->>US: ApplicationUser or null
+    US-->>C: user
+    alt User not found or inactive
+        C-->>SME: 200 Re-render with error
+    else Found
+        C->>AS: VerifyPassword(password, user.PasswordHash)
+        AS-->>C: true/false
+        alt Invalid password
+            C-->>SME: 200 Re-render with error
+        else Valid
+            C->>AS: CreatePrincipal(user)
+            AS-->>C: ClaimsPrincipal
+            C->>C: HttpContext.SignInAsync(cookie, principal)
+            C->>AS: UpdateLastLoginAsync(user.Id)
+            AS->>DB: UPDATE ApplicationUsers SET LastLoginAt=?
+            C->>EA: LogAsync(Login, UserId)
+            EA->>DB: INSERT AuditLogs
+            C-->>SME: 302 Redirect to Dashboard or Profile Step
+        end
+    end

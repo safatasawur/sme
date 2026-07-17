@@ -1,0 +1,25 @@
+@{var bank = ViewBag.Bank as SMElevate.Web.Models.Common.Bank; var user = ViewBag.User as SMElevate.Web.Models.Common.ApplicationUser;}
+<div class="row row-cards">
+  <div class="col-md-6">
+    <div class="card mb-3"><div class="card-header"><h3 class="card-title">Bank Information</h3></div><div class="card-body">
+      <div class="datagrid">
+        <div class="datagrid-item"><div class="datagrid-title">Bank Name</div><div class="datagrid-content">@(bank?.BankName ?? "—")</div></div>
+        <div class="datagrid-item"><div class="datagrid-title">IBAN Prefix</div><div class="datagrid-content">@(bank?.IBANPrefix ?? "—")</div></div>
+        <div class="datagrid-item"><div class="datagrid-title">Bank Code</div><div class="datagrid-content">@(bank?.BankCode ?? "N/A")</div></div>
+        <div class="datagrid-item"><div class="datagrid-title">Bank Email</div><div class="datagrid-content">@(bank?.BankEmailAddress ?? "—")</div></div>
+      </div>
+    </div></div>
+  </div>
+  <div class="col-md-6">
+    <div class="card mb-3"><div class="card-header"><h3 class="card-title">Assigned User</h3></div><div class="card-body">
+      <div class="datagrid">
+        <div class="datagrid-item"><div class="datagrid-title">Full Name</div><div class="datagrid-content">@(user?.FullName ?? "—")</div></div>
+        <div class="datagrid-item"><div class="datagrid-title">Email Address</div><div class="datagrid-content">@(user?.EmailAddress ?? "—")</div></div>
+        <div class="datagrid-item"><div class="datagrid-title">Mobile No.</div><div class="datagrid-content">@(user?.MobileNo ?? "—")</div></div>
+        <div class="datagrid-item"><div class="datagrid-title">User Role</div><div class="datagrid-content"><span class="badge bg-azure-lt">Banks</span></div></div>
+        <div class="datagrid-item"><div class="datagrid-title">Active Status</div><div class="datagrid-content"><span class="badge @(user?.IsActive == true ? "bg-green-lt" : "bg-red-lt")">@(user?.IsActive == true ? "Active" : "Inactive")</span></div></div>
+      </div>
+    </div></div>
+  </div>
+</div>
+<div class="alert alert-info" role="alert">Profile information is readonly. Contact your SMElevate Admin to update bank or user details.</div>

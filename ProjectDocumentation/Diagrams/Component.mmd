@@ -1,0 +1,60 @@
+graph TB
+    subgraph Browser["Client Browser"]
+        UI["Tabler Bootstrap 5 UI
+(HTML, CSS, Chart.js, AJAX)"]
+    end
+    subgraph MVC["ASP.NET Core MVC (.NET 10)"]
+        Admin["Admin Area
+(9 Controllers)"]
+        Banks["Banks Area
+(5 Controllers)"]
+        EndUser["EndUser Area
+(5 Controllers)"]
+        Auth["Auth Middleware
+(Cookie + OAuth)"]
+        Antiforgery["Anti-Forgery
+Middleware"]
+    end
+    subgraph Services["Service Layer (15 Scoped Services)"]
+        AS[AuthService]
+        US[UserService]
+        LRS[LoanRequestService]
+        ES[EmailService]
+        OS[OtpService]
+        SS[SettingsService]
+        NS[NotificationService]
+        AuS[AuditService]
+        FU[FileUploadService]
+        SFC[SchemeFormConfigService]
+        RS[RequestNumberService]
+    end
+    subgraph Data["Data Access Layer"]
+        DB[(SQL Server
+SMElevate-v2)]
+        EF["ApplicationDbContext
+(EF Core 10)"]
+        Files["wwwroot/uploads/
+(Local Disk)"]
+    end
+    subgraph External["External Services"]
+        SMTP["SMTP Server
+(MailKit)"]
+        GOAuth["Google OAuth
+accounts.google.com"]
+        AOAuth["Apple OAuth
+appleid.apple.com"]
+        MOAuth["Microsoft OAuth
+login.microsoftonline.com"]
+    end
+
+    UI --> Admin & Banks & EndUser
+    Auth --> Admin & Banks & EndUser
+    Antiforgery --> Admin & Banks & EndUser
+    Admin --> AS & US & LRS & SS & SFC & AuS & RS
+    Banks --> AS & OS & ES & LRS & NS & AuS & FU
+    EndUser --> AS & US & LRS & ES & NS & AuS & SFC & RS
+    ES --> SMTP
+    AS --> GOAuth & AOAuth & MOAuth
+    FU --> Files
+    AS & US & LRS & ES & OS & SS & NS & AuS & SFC & RS --> EF
+    EF --> DB

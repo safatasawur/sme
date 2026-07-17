@@ -1,0 +1,252 @@
+@model SMElevate.Web.Areas.Admin.ViewModels.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    ViewData["PreTitle"] = "SMElevate Admin Portal";
+    ViewData["ActiveNav"] = "Dashboard";
+}
+@section Styles {
+  <script src="~/dist/libs/apexcharts/dist/apexcharts.min.js"></script>
+}
+
+<p class="text-secondary mb-3">Overview of SME registrations and loan application activity.</p>
+
+@* Row 1: 4 primary stat cards *@
+<div class="row row-cards mb-3">
+  <div class="col-sm-6 col-lg-3">
+    <div class="card card-sm">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <span class="bg-primary text-white avatar avatar-square">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg>
+            </span>
+          </div>
+          <div class="col">
+            <div class="fw-medium">@Model.TotalSmesRegistered</div>
+            <div class="text-secondary">SMEs Registered</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card card-sm">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <span class="bg-azure text-white avatar avatar-square">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1"><path d="M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -6" /><path d="M15 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -10" /><path d="M9 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -14" /><path d="M4 20h14" /></svg>
+            </span>
+          </div>
+          <div class="col">
+            <div class="fw-medium">@Model.TotalApplications</div>
+            <div class="text-secondary">Total No. of Applications</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card card-sm">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <span class="bg-orange text-white avatar avatar-square">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1"><path d="M12 8l0 4l2 2" /><path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5" /></svg>
+            </span>
+          </div>
+          <div class="col">
+            <div class="fw-medium">@Model.InProcessApplications</div>
+            <div class="text-secondary">In Process Applications</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card card-sm">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <span class="bg-green text-white avatar avatar-square">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M9 12l2 2l4 -4" /></svg>
+            </span>
+          </div>
+          <div class="col">
+            <div class="fw-medium">@Model.CompletedApplications</div>
+            <div class="text-secondary">Completed Applications</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+@* Row 2: 4 secondary stat cards *@
+<div class="row row-cards mb-3">
+  <div class="col-sm-6 col-lg-3">
+    <div class="card card-sm">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <span class="bg-green-lt avatar avatar-square">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1 text-green"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M9 12l2 2l4 -4" /></svg>
+            </span>
+          </div>
+          <div class="col">
+            <div class="fw-medium">@Model.ApprovedApplications</div>
+            <div class="text-secondary">Approved Applications</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card card-sm">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <span class="bg-red-lt avatar avatar-square">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1 text-red"><path d="M10 10l4 4m0 -4l-4 4" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /></svg>
+            </span>
+          </div>
+          <div class="col">
+            <div class="fw-medium">@Model.RejectedApplications</div>
+            <div class="text-secondary">Rejected Applications</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card card-sm">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <span class="bg-azure-lt avatar avatar-square">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1 text-azure"><path d="M3 21l18 0" /><path d="M9 8l1 0" /><path d="M9 12l1 0" /><path d="M9 16l1 0" /><path d="M14 8l1 0" /><path d="M14 12l1 0" /><path d="M14 16l1 0" /><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16" /></svg>
+            </span>
+          </div>
+          <div class="col">
+            <div class="fw-medium">@Model.ParticipatingBanks</div>
+            <div class="text-secondary">Participating Banks</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card card-sm">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <span class="bg-purple-lt avatar avatar-square">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1 text-purple"><path d="M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -6" /><path d="M15 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -10" /><path d="M9 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -14" /><path d="M4 20h14" /></svg>
+            </span>
+          </div>
+          <div class="col">
+            <div class="fw-medium">@Model.ActiveSchemes</div>
+            <div class="text-secondary">Active Schemes</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+@* Row 3: Application Status + Registration Trend *@
+<div class="row row-deck row-cards mb-3">
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Application Status</h3></div>
+      <div class="card-body">
+        <div id="chart-application-status" class="position-relative"></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">SME Registration Trend</h3></div>
+      <div class="card-body">
+        <div id="chart-registration-trend" class="position-relative"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+@* Row 4: Bank-wise + Scheme-wise *@
+<div class="row row-deck row-cards">
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Bank-wise Application Summary</h3></div>
+      <div class="card-body">
+        <div id="chart-bank-wise" class="position-relative"></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Scheme-wise Application Summary</h3></div>
+      <div class="card-body">
+        <div id="chart-scheme-wise" class="position-relative"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+<script>
+(function () {
+  if (!window.ApexCharts) { setTimeout(arguments.callee, 100); return; }
+
+  var statusLabels  = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.StatusLabels));
+  var statusSeries  = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.StatusCounts));
+  var monthLabels   = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyLabels));
+  var monthSeries   = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyCounts));
+  var bankLabels    = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.BankWiseLabels));
+  var bankSeries    = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.BankWiseCounts));
+  var schemeLabels  = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.SchemeWiseLabels));
+  var schemeSeries  = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.SchemeWiseCounts));
+
+  new ApexCharts(document.getElementById("chart-application-status"), {
+    chart: { type: "donut", fontFamily: "inherit", height: 260, animations: { enabled: false } },
+    series: statusSeries,
+    labels: statusLabels,
+    colors: ["var(--tblr-azure)", "var(--tblr-orange)", "var(--tblr-green)", "var(--tblr-red)"],
+    legend: { show: true, position: "bottom" },
+    tooltip: { theme: "dark" },
+  }).render();
+
+  new ApexCharts(document.getElementById("chart-registration-trend"), {
+    chart: { type: "area", fontFamily: "inherit", height: 260, toolbar: { show: false }, animations: { enabled: false } },
+    series: [{ name: "SMEs Registered", data: monthSeries }],
+    xaxis: { categories: monthLabels },
+    colors: ["var(--tblr-primary)"],
+    fill: { opacity: 0.15, type: "solid" },
+    stroke: { width: 2, curve: "smooth" },
+    grid: { strokeDashArray: 4 },
+    tooltip: { theme: "dark" },
+  }).render();
+
+  new ApexCharts(document.getElementById("chart-bank-wise"), {
+    chart: { type: "bar", fontFamily: "inherit", height: 260, toolbar: { show: false }, animations: { enabled: false } },
+    series: [{ name: "Applications", data: bankSeries }],
+    xaxis: { categories: bankLabels },
+    colors: ["var(--tblr-azure)"],
+    plotOptions: { bar: { borderRadius: 4, columnWidth: "45%" } },
+    grid: { strokeDashArray: 4 },
+    tooltip: { theme: "dark" },
+  }).render();
+
+  new ApexCharts(document.getElementById("chart-scheme-wise"), {
+    chart: { type: "bar", fontFamily: "inherit", height: 260, toolbar: { show: false }, animations: { enabled: false } },
+    series: [{ name: "Applications", data: schemeSeries }],
+    xaxis: { categories: schemeLabels },
+    colors: ["var(--tblr-purple)"],
+    plotOptions: { bar: { borderRadius: 4, columnWidth: "45%", horizontal: true } },
+    grid: { strokeDashArray: 4 },
+    tooltip: { theme: "dark" },
+  }).render();
+})();
+</script>
+}

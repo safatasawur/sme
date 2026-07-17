@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>@ViewData["Title"] - SMElevate Admin</title>
+  <link href="~/dist/css/tabler.css" rel="stylesheet" />
+  <link href="~/dist/css/tabler-themes.css" rel="stylesheet" />
+  <link href="~/preview/css/demo.css" rel="stylesheet" />
+  <style>@@import url("https://rsms.me/inter/inter.css");</style>
+  @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="layout-fluid">
+  <a href="#content" class="visually-hidden skip-link">Skip to main content</a>
+  <script src="~/dist/js/tabler-theme.min.js"></script>
+  <div class="page">
+    <!-- SIDEBAR -->
+    <aside class="navbar navbar-vertical navbar-expand-lg" data-bs-theme="dark">
+      <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-menu" aria-expanded="false">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-brand navbar-brand-autodark">
+          <a asp-area="Admin" asp-controller="AdminDashboard" asp-action="Index" class="text-decoration-none">
+            <span class="h2 mb-0 text-primary">SMElevate</span>
+          </a>
+        </div>
+        <div class="collapse navbar-collapse" id="sidebar-menu">
+          <div class="d-flex align-items-center px-3 py-3 mb-2 text-white-50 small">
+            <span class="avatar avatar-sm bg-primary-lt me-2">AD</span>
+            <div>
+              <div class="text-white">@(User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value ?? "Admin")</div>
+              <div>Administrator</div>
+            </div>
+          </div>
+          <ul class="navbar-nav pt-lg-0">
+            <li class="nav-item @(ViewData["ActiveNav"] as string == "Dashboard" ? "active" : "")">
+              <a class="nav-link" asp-area="Admin" asp-controller="AdminDashboard" asp-action="Index">
+                <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1"><path d="M5 12l-2 0l9 -9l9 9l-2 0" /><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" /><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" /></svg></span>
+                <span class="nav-link-title"> Dashboard </span>
+              </a>
+            </li>
+            <li class="nav-item dropdown @(ViewData["ActiveNav"] as string == "Users" ? "active" : "")">
+              <a class="nav-link dropdown-toggle" href="#sidebar-users" data-bs-toggle="dropdown" data-bs-auto-close="false">
+                <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg></span>
+                <span class="nav-link-title"> User Management </span>
+              </a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" asp-area="Admin" asp-controller="AdminUsers" asp-action="Index">User List</a>
+                <a class="dropdown-item" asp-area="Admin" asp-controller="AdminUsers" asp-action="Create">Create User</a>
+              </div>
+            </li>
+            <li class="nav-item @(ViewData["ActiveNav"] as string == "Roles" ? "active" : "")">
+              <a class="nav-link" asp-area="Admin" asp-controller="AdminRoles" asp-action="Index">
+                <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1"><path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3" /></svg></span>
+                <span class="nav-link-title"> Role Management </span>
+              </a>
+            </li>
+            <li class="nav-item dropdown @(ViewData["ActiveNav"] as string == "Schemes" ? "active" : "")">
+              <a class="nav-link dropdown-toggle" href="#sidebar-schemes" data-bs-toggle="dropdown" data-bs-auto-close="false">
+                <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1"><path d="M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -6" /><path d="M15 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -10" /><path d="M9 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -14" /><path d="M4 20h14" /></svg></span>
+                <span class="nav-link-title"> SME Scheme Management </span>
+              </a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" asp-area="Admin" asp-controller="AdminSchemes" asp-action="Index">Scheme List</a>
+              </div>
+            </li>
+            <li class="nav-item @(ViewData["ActiveNav"] as string == "Banks" ? "active" : "")">
+              <a class="nav-link" asp-area="Admin" asp-controller="AdminBanks" asp-action="Index">
+                <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1"><path d="M3 21l18 0" /><path d="M9 8l1 0" /><path d="M9 12l1 0" /><path d="M9 16l1 0" /><path d="M14 8l1 0" /><path d="M14 12l1 0" /><path d="M14 16l1 0" /><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16" /></svg></span>
+                <span class="nav-link-title"> Bank Management </span>
+              </a>
+            </li>
+            <li class="nav-item @(ViewData["ActiveNav"] as string == "Lookups" ? "active" : "")">
+              <a class="nav-link" asp-area="Admin" asp-controller="AdminLookups" asp-action="Index">
+                <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1"><path d="M9 6l11 0" /><path d="M9 12l11 0" /><path d="M9 18l11 0" /><path d="M5 6l0 .01" /><path d="M5 12l0 .01" /><path d="M5 18l0 .01" /></svg></span>
+                <span class="nav-link-title"> Master Lookup Fields </span>
+              </a>
+            </li>
+            <li class="nav-item @(ViewData["ActiveNav"] as string == "LoanApplications" ? "active" : "")">
+              <a class="nav-link" asp-area="Admin" asp-controller="AdminLoanApplications" asp-action="Index">
+                <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1"><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 9l1 0" /><path d="M9 13l6 0" /><path d="M9 17l6 0" /></svg></span>
+                <span class="nav-link-title"> Loan Applications </span>
+              </a>
+            </li>
+            <li class="nav-item dropdown @(ViewData["ActiveNav"] as string == "Reports" ? "active" : "")">
+              <a class="nav-link dropdown-toggle" href="#sidebar-reports" data-bs-toggle="dropdown" data-bs-auto-close="false">
+                <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1"><path d="M8 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h5.697" /><path d="M18 14v4h4" /><path d="M18 11v-4a2 2 0 0 0 -2 -2h-2" /><path d="M10 3h4a1 1 0 0 1 1 1v3a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1" /><path d="M18 18m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /></svg></span>
+                <span class="nav-link-title"> Reports </span>
+              </a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" asp-area="Admin" asp-controller="AdminReports" asp-action="Index">Report Dashboard</a>
+                <a class="dropdown-item" asp-area="Admin" asp-controller="AdminReports" asp-action="ApplicationStatus">Application Status</a>
+                <a class="dropdown-item" asp-area="Admin" asp-controller="AdminReports" asp-action="TurnaroundTime">Turnaround Time</a>
+                <a class="dropdown-item" asp-area="Admin" asp-controller="AdminReports" asp-action="DeclineAnalysis">Decline Analysis</a>
+                <a class="dropdown-item" asp-area="Admin" asp-controller="AdminReports" asp-action="DisbursementSummary">Disbursement Summary</a>
+              </div>
+            </li>
+            <li class="nav-item dropdown @(ViewData["ActiveNav"] as string == "Workflow" ? "active" : "")">
+              <a class="nav-link dropdown-toggle" href="#sidebar-workflow" data-bs-toggle="dropdown" data-bs-auto-close="false">
+                <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1"><path d="M3 3m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z" /><path d="M3 17m0 2a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-4a2 2 0 0 1 -2 -2z" /><path d="M12 7v3a2 2 0 0 1 -2 2h-5" /><path d="M18 7v10" /></svg></span>
+                <span class="nav-link-title"> Workflow Config </span>
+              </a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" asp-area="Admin" asp-controller="AdminWorkflow" asp-action="Statuses">Statuses</a>
+                <a class="dropdown-item" asp-area="Admin" asp-controller="AdminWorkflow" asp-action="Transitions">Transitions</a>
+                <a class="dropdown-item" asp-area="Admin" asp-controller="AdminWorkflow" asp-action="DeclineReasonCodes">Decline Reason Codes</a>
+              </div>
+            </li>
+            <li class="nav-item @(ViewData["ActiveNav"] as string == "Settings" ? "active" : "")">
+              <a class="nav-link" asp-area="Admin" asp-controller="AdminSettings" asp-action="Index">
+                <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1"><path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065" /><path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /></svg></span>
+                <span class="nav-link-title"> Settings </span>
+              </a>
+            </li>
+            <li class="nav-item mt-3 pt-3 border-top border-white-10">
+              <form asp-area="" asp-controller="Auth" asp-action="Logout" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="nav-link btn btn-link p-0 text-start w-100">
+                  <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1"><path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" /><path d="M7 12h14l-3 -3" /><path d="M18 15l3 -3" /></svg></span>
+                  <span class="nav-link-title"> Logout </span>
+                </button>
+              </form>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+    <!-- END SIDEBAR -->
+    <div class="page-wrapper">
+      <div class="page-header d-print-none">
+        <div class="container-xl">
+          <div class="row g-2 align-items-center">
+            <div class="col">
+              <div class="page-pretitle">@ViewData["PreTitle"]</div>
+              <h1 class="page-title">@ViewData["Title"]</h1>
+            </div>
+            <div class="col-auto ms-auto d-print-none">
+              @await RenderSectionAsync("HeaderActions", required: false)
+            </div>
+          </div>
+        </div>
+      </div>
+      <main id="content" class="page-body">
+        <div class="container-xl">
+          @if (TempData["Success"] is string successMsg)
+          {
+            <div class="alert alert-success alert-dismissible mb-3" role="alert">
+              @successMsg
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          }
+          @if (TempData["Error"] is string errorMsg)
+          {
+            <div class="alert alert-danger alert-dismissible mb-3" role="alert">
+              @errorMsg
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          }
+          @RenderBody()
+        </div>
+      </main>
+      <footer class="footer footer-transparent d-print-none">
+        <div class="container-xl">
+          <div class="row text-center align-items-center flex-row-reverse">
+            <div class="col-12 col-lg-auto mt-3 mt-lg-0">
+              <ul class="list-inline list-inline-dots mb-0">
+                <li class="list-inline-item">Copyright &copy; 2026 <span class="link-secondary">SMElevate</span>. All rights reserved.</li>
+                <li class="list-inline-item">Admin Portal</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+  <script src="~/dist/js/tabler.min.js" defer></script>
+  <script src="~/preview/js/demo.min.js" defer></script>
+  @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,104 @@
+@model List<SMElevate.Web.Models.Common.LoanRequest>
+@{
+    var sp = ViewBag.SearchParams as dynamic;
+    var statusList = ViewBag.StatusList as List<SMElevate.Web.Models.Common.WorkflowStatus>;
+    var banks = ViewBag.Banks as List<SMElevate.Web.Models.Common.Bank>;
+    int total = ViewBag.Total; int page = ViewBag.Page; int pageSize = ViewBag.PageSize;
+    int totalPages = (int)Math.Ceiling((double)total / pageSize);
+}
+<form method="get" class="card mb-3">
+  <div class="card-body">
+    <div class="row g-2">
+      <div class="col-md-3">
+        <input type="text" name="search" value="@sp?.search" class="form-control" placeholder="Search CaseId, RequestNo, Business, Email" />
+      </div>
+      <div class="col-md-2">
+        <select name="status" class="form-select">
+          <option value="">All Statuses</option>
+          @foreach (var s in statusList ?? new()) {
+            <option value="@s.StatusCode" selected="@(sp?.status == s.StatusCode ? "selected" : null)">@s.StatusName</option>
+          }
+        </select>
+      </div>
+      <div class="col-md-2">
+        <select name="bankId" class="form-select">
+          <option value="">All Banks</option>
+          @foreach (var b in banks ?? new()) {
+            <option value="@b.Id" selected="@(sp?.bankId?.ToString() == b.Id.ToString() ? "selected" : null)">@b.BankName</option>
+          }
+        </select>
+      </div>
+      <div class="col-md-2">
+        <input type="date" name="from" value="@sp?.from" class="form-control" placeholder="From" />
+      </div>
+      <div class="col-md-2">
+        <input type="date" name="to" value="@sp?.to" class="form-control" placeholder="To" />
+      </div>
+      <div class="col-md-1 d-flex gap-1">
+        <button type="submit" class="btn btn-primary flex-fill">Filter</button>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Loan Applications <span class="badge bg-azure-lt ms-2">@total</span></h3>
+    <div class="card-actions">
+      <a asp-area="Admin" asp-controller="AdminReports" asp-action="Index" class="btn btn-2">Reports</a>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-vcenter card-table">
+      <thead>
+        <tr>
+          <th>Case ID</th>
+          <th>Request No</th>
+          <th>Business</th>
+          <th>Applicant</th>
+          <th>Bank</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Submitted</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var r in Model) {
+        <tr>
+          <td><strong>@(r.CaseId ?? "—")</strong></td>
+          <td class="text-secondary small">@r.RequestNo</td>
+          <td>@r.NameOfBusiness</td>
+          <td class="text-secondary small">@r.User?.EmailAddress</td>
+          <td>@(r.AssignedBank?.BankName ?? "Unassigned")</td>
+          <td>Rs. @r.Amount.ToString("N0")</td>
+          <td><span class="badge bg-azure-lt">@(r.Status?.ValueText ?? "—")</span></td>
+          <td class="text-secondary small">@(r.SubmittedAt?.ToString("yyyy-MM-dd") ?? r.CreatedAt.ToString("yyyy-MM-dd"))</td>
+          <td>
+            <a asp-area="Admin" asp-controller="AdminLoanApplications" asp-action="Detail" asp-route-id="@r.Id" class="btn btn-sm btn-outline-primary">View</a>
+          </td>
+        </tr>
+        }
+        @if (!Model.Any()) {
+        <tr><td colspan="9" class="text-center text-secondary py-4">No applications found.</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  @if (totalPages > 1) {
+  <div class="card-footer d-flex align-items-center">
+    <p class="m-0 text-secondary">Showing <span>@((page-1)*pageSize+1)–@(Math.Min(page*pageSize,total))</span> of <span>@total</span></p>
+    <ul class="pagination m-0 ms-auto">
+      @if (page > 1) {
+      <li class="page-item"><a class="page-link" href="?page=@(page-1)&search=@sp?.search&status=@sp?.status&bankId=@sp?.bankId&from=@sp?.from&to=@sp?.to">prev</a></li>
+      }
+      @for (int p = Math.Max(1,page-2); p <= Math.Min(totalPages, page+2); p++) {
+      <li class="page-item @(p==page?"active":"")"><a class="page-link" href="?page=@p&search=@sp?.search&status=@sp?.status&bankId=@sp?.bankId&from=@sp?.from&to=@sp?.to">@p</a></li>
+      }
+      @if (page < totalPages) {
+      <li class="page-item"><a class="page-link" href="?page=@(page+1)&search=@sp?.search&status=@sp?.status&bankId=@sp?.bankId&from=@sp?.from&to=@sp?.to">next</a></li>
+      }
+    </ul>
+  </div>
+  }
+</div>

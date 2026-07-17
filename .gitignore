@@ -1,0 +1,24 @@
+# Build output
+**/bin/
+**/obj/
+
+# Visual Studio
+.vs/
+
+# VS Code
+.vscode/
+
+# User files
+*.user
+*.suo
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local configuration
+SMElevate.Web/appsettings.Development.json
+SMElevate.Web/Properties/launchSettings.json

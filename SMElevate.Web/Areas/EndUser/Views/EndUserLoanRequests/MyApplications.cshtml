@@ -1,0 +1,11 @@
+@model List<SMElevate.Web.Models.Common.LoanRequest>
+@section HeaderActions {<a asp-area="EndUser" asp-controller="EndUserLoanRequests" asp-action="Create" class="btn btn-primary btn-3">Request a Loan</a>}
+<div class="card"><div class="card-header"><h3 class="card-title">My Applications</h3></div><div class="table-responsive">
+<table class="table table-vcenter card-table"><thead><tr><th>Request ID</th><th>Business</th><th>Bank</th><th>Amount</th><th>Status</th><th>Submitted</th><th></th></tr></thead><tbody>
+@foreach (var r in Model) {
+<tr><td><a asp-area="EndUser" asp-controller="EndUserLoanRequests" asp-action="Detail" asp-route-requestNo="@r.RequestNo">@r.RequestNo</a></td>
+<td>@r.NameOfBusiness</td><td>@(r.AssignedBank?.BankName ?? "—")</td><td>Rs. @r.Amount.ToString("N0")</td>
+<td><span class="badge bg-azure-lt">@(r.Status?.ValueText ?? "—")</span></td><td>@(r.SubmittedAt?.ToString("yyyy-MM-dd") ?? "—")</td>
+<td><a asp-area="EndUser" asp-controller="EndUserLoanRequests" asp-action="Detail" asp-route-requestNo="@r.RequestNo" class="btn btn-2">View Details</a></td></tr>}
+@if (!Model.Any()) {<tr><td colspan="7" class="text-secondary text-center py-4">No loan requests yet. Click "Request a Loan" to create your first request.</td></tr>}
+</tbody></table></div></div>

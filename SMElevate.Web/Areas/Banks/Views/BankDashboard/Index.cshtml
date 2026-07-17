@@ -1,0 +1,49 @@
+@model SMElevate.Web.Areas.Banks.ViewModels.BankDashboardViewModel
+<div class="row row-cards mb-3">
+  <div class="col-sm-6 col-lg-3"><div class="card card-sm"><div class="card-body"><div class="fw-medium fs-2">@Model.AssignedApplications</div><div class="text-secondary">Total Assigned</div></div></div></div>
+  <div class="col-sm-6 col-lg-3"><div class="card card-sm"><div class="card-body"><div class="fw-medium fs-2 text-yellow">@Model.NewReferrals</div><div class="text-secondary">New Referrals</div></div></div></div>
+  <div class="col-sm-6 col-lg-3"><div class="card card-sm"><div class="card-body"><div class="fw-medium fs-2 text-blue">@Model.UnderReview</div><div class="text-secondary">Under Assessment</div></div></div></div>
+  <div class="col-sm-6 col-lg-3"><div class="card card-sm"><div class="card-body"><div class="fw-medium fs-2 text-orange">@Model.AdditionalInfoPending</div><div class="text-secondary">Info Pending</div></div></div></div>
+</div>
+<div class="row row-cards mb-3">
+  <div class="col-sm-6 col-lg-3"><div class="card card-sm"><div class="card-body"><div class="fw-medium fs-2 text-cyan">@Model.ConditionalOffers</div><div class="text-secondary">Offers Issued</div></div></div></div>
+  <div class="col-sm-6 col-lg-3"><div class="card card-sm"><div class="card-body"><div class="fw-medium fs-2 text-green">@Model.Approved</div><div class="text-secondary">Approved</div></div></div></div>
+  <div class="col-sm-6 col-lg-3"><div class="card card-sm"><div class="card-body"><div class="fw-medium fs-2 text-red">@Model.Declined</div><div class="text-secondary">Declined</div></div></div></div>
+  <div class="col-sm-6 col-lg-3"><div class="card card-sm"><div class="card-body"><div class="fw-medium fs-2 text-teal">@Model.Disbursed</div><div class="text-secondary">Disbursed</div></div></div></div>
+</div>
+<div class="row row-cards">
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Recent Active Applications</h3>
+        <div class="card-actions"><a asp-area="Banks" asp-controller="BankRequests" asp-action="Assigned" class="btn btn-2">View All</a></div>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-vcenter card-table">
+          <thead><tr><th>Case ID</th><th>Business</th><th>Amount</th><th>Status</th><th>Updated</th></tr></thead>
+          <tbody>
+            @foreach (var r in Model.RecentApplications) {
+            <tr>
+              <td><a asp-area="Banks" asp-controller="BankRequests" asp-action="Detail" asp-route-id="@r.Id">@(r.CaseId ?? r.RequestNo)</a></td>
+              <td>@r.NameOfBusiness</td>
+              <td>Rs. @r.Amount.ToString("N0")</td>
+              <td><span class="badge bg-azure-lt">@(r.Status?.ValueText ?? "—")</span></td>
+              <td class="text-secondary small">@((r.UpdatedAt ?? r.CreatedAt).ToString("yyyy-MM-dd"))</td>
+            </tr>
+            }
+            @if (!Model.RecentApplications.Any()) { <tr><td colspan="5" class="text-center text-secondary">No active applications.</td></tr> }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Avg. Turnaround Time</h3></div>
+      <div class="card-body">
+        <div class="display-4 fw-bold text-primary">@Model.AvgTurnaroundDays.ToString("F1")</div>
+        <div class="text-secondary">days from referral to decision</div>
+      </div>
+    </div>
+  </div>
+</div>

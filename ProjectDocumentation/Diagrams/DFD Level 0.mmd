@@ -1,0 +1,17 @@
+graph LR
+    SME(["SME Owner"])
+    Bank(["Bank Officer"])
+    Admin(["System Admin"])
+    OAuth(["OAuth Providers"])
+    SMTP(["SMTP Server"])
+
+    SME -- "Registration, Profile, Loan Application" --> P0["SMElevate V2
+Platform"]
+    P0 -- "Status Updates, Notifications, Emails" --> SME
+    Bank -- "OTP Login, Decisions, Attachments" --> P0
+    P0 -- "New Applications, Notifications, OTP Emails" --> Bank
+    Admin -- "Configuration, User & Scheme Management" --> P0
+    P0 -- "Analytics, Audit Logs, Reports" --> Admin
+    OAuth -- "Auth Tokens, Identity Claims" --> P0
+    P0 -- "Email (Templates + OTP)" --> SMTP
+    SMTP -- "Delivered Emails" --> SME & Bank

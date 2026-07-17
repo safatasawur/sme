@@ -1,0 +1,14 @@
+@model List<SMElevate.Web.Models.Common.LoanRequest>
+<div class="card"><div class="card-header"><h3 class="card-title">Assigned Requests</h3><div class="card-actions"><input type="search" id="q" class="form-control" placeholder="Search…" oninput="filter(this.value)" /></div></div>
+<div class="table-responsive"><table class="table table-vcenter card-table" id="tbl">
+<thead><tr><th>Request ID</th><th>SME / Business</th><th>Contact Person</th><th>Facility</th><th>Amount</th><th>Tenor</th><th>Submitted</th><th>Status</th><th></th></tr></thead><tbody>
+@foreach (var r in Model) {
+<tr><td><strong>@r.RequestNo</strong></td><td>@r.NameOfBusiness</td><td>@r.ContactPerson</td><td>@r.FacilityRequested</td>
+<td>Rs. @r.Amount.ToString("N0")</td><td>@r.Tenor months</td><td>@(r.SubmittedAt?.ToString("yyyy-MM-dd") ?? "—")</td>
+<td><span class="badge bg-azure-lt">@(r.Status?.ValueText ?? "—")</span></td>
+<td class="text-end"><div class="btn-list flex-nowrap justify-content-end">
+  <a asp-area="Banks" asp-controller="BankRequests" asp-action="Detail" asp-route-id="@r.Id" asp-route-viewOnly="true" class="btn btn-2">View Details</a>
+  <a asp-area="Banks" asp-controller="BankRequests" asp-action="Detail" asp-route-id="@r.Id" class="btn btn-primary btn-2">Review / Process</a>
+</div></td></tr>}
+</tbody></table></div></div>
+<script>function filter(q){document.querySelectorAll("#tbl tbody tr").forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q.toLowerCase())?"":"none"});}</script>

@@ -1,0 +1,25 @@
+@model List<SMElevate.Web.Models.Common.Scheme>
+@{var configCounts = ViewBag.ConfigCounts as Dictionary<int,int> ?? new Dictionary<int,int>();}
+@section HeaderActions {
+  <div class="btn-list">
+    <a asp-area="Admin" asp-controller="AdminFormBuilder" asp-action="Index" class="btn btn-2">Form Builder</a>
+    <a asp-area="Admin" asp-controller="AdminSchemes" asp-action="Create" class="btn btn-primary btn-3">New Scheme</a>
+  </div>
+}
+<div class="card"><div class="card-header"><h3 class="card-title">SME Schemes</h3></div><div class="table-responsive">
+<table class="table table-vcenter card-table"><thead><tr><th>Scheme</th><th>Code</th><th>Validity</th><th>Form Config</th><th>Status</th><th>Published</th><th></th></tr></thead><tbody>
+@{var statusBadge = new Dictionary<string,string>{{"Draft","bg-secondary-lt"},{"Published","bg-green-lt"},{"Inactive","bg-orange-lt"},{"Archived","bg-red-lt"}};}
+@foreach (var s in Model) {
+    var fieldCount = configCounts.TryGetValue(s.Id, out var fc) ? fc : 0;
+<tr><td><strong>@s.SchemeName</strong><div class="text-secondary small">@s.SchemeDescription</div></td><td>@s.SchemeCode</td>
+<td class="text-secondary">@(s.StartDate?.ToString("yyyy-MM-dd")) — @(s.EndDate?.ToString("yyyy-MM-dd"))</td>
+<td>@(fieldCount > 0 ? $"<span class='badge bg-azure-lt'>{fieldCount} fields</span>" : "<span class='text-secondary'>Not configured</span>")</td>
+<td><span class="badge @(statusBadge.GetValueOrDefault(s.Status, "bg-secondary-lt"))">@s.Status</span></td>
+<td><span class="badge @(s.IsPublished ? "bg-green-lt" : "bg-secondary-lt")">@(s.IsPublished ? "Published" : "Unpublished")</span></td>
+<td class="text-end"><div class="btn-list flex-nowrap justify-content-end">
+  <a asp-area="Admin" asp-controller="AdminSchemes" asp-action="Edit" asp-route-id="@s.Id" class="btn btn-2">Edit</a>
+  <a asp-area="Admin" asp-controller="AdminFormBuilder" asp-action="Index" asp-route-schemeId="@s.Id" class="btn btn-2">Form Builder</a>
+  @if (!s.IsPublished) {<form asp-area="Admin" asp-controller="AdminSchemes" asp-action="Publish" asp-route-id="@s.Id" method="post" class="d-inline">@Html.AntiForgeryToken()<button type="submit" class="btn btn-2">Publish</button></form>}
+  else {<form asp-area="Admin" asp-controller="AdminSchemes" asp-action="Unpublish" asp-route-id="@s.Id" method="post" class="d-inline">@Html.AntiForgeryToken()<button type="submit" class="btn btn-2">Unpublish</button></form>}
+</div></td></tr>}
+</tbody></table></div></div>

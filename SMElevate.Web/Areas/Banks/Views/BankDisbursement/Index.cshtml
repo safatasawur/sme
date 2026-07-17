@@ -1,0 +1,81 @@
+@model SMElevate.Web.Areas.Banks.ViewModels.RecordDisbursementViewModel
+@{
+    var request = ViewBag.Request as SMElevate.Web.Models.Common.LoanRequest;
+    var existing = ViewBag.Existing as SMElevate.Web.Models.Common.Disbursement;
+}
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="row align-items-center">
+      <div class="col"><div class="text-secondary">Application</div><div class="h3 mb-0">@(request?.CaseId ?? request?.RequestNo)</div></div>
+      <div class="col-auto"><span class="badge fs-4 p-2 bg-azure-lt">@(request?.Status?.ValueText ?? "—")</span></div>
+    </div>
+  </div>
+</div>
+
+@if (existing != null) {
+<div class="card mb-3">
+  <div class="card-header"><h3 class="card-title">Existing Disbursement Record</h3></div>
+  <div class="card-body">
+    <div class="datagrid">
+      <div class="datagrid-item"><div class="datagrid-title">Status</div><div class="datagrid-content"><span class="badge bg-green-lt">@existing.DisbursementStatus</span></div></div>
+      <div class="datagrid-item"><div class="datagrid-title">Approved Amount</div><div class="datagrid-content">Rs. @existing.ApprovedAmount.ToString("N0")</div></div>
+      <div class="datagrid-item"><div class="datagrid-title">Disbursed Amount</div><div class="datagrid-content">Rs. @(existing.DisbursedAmount?.ToString("N0") ?? "—")</div></div>
+      <div class="datagrid-item"><div class="datagrid-title">Value Date</div><div class="datagrid-content">@(existing.ValueDate?.ToString("yyyy-MM-dd") ?? "—")</div></div>
+      <div class="datagrid-item"><div class="datagrid-title">Account</div><div class="datagrid-content">@(existing.DisbursementAccount ?? "—")</div></div>
+      <div class="datagrid-item"><div class="datagrid-title">Bank Reference</div><div class="datagrid-content">@(existing.BankReferenceNumber ?? "—")</div></div>
+    </div>
+  </div>
+</div>
+}
+
+<div class="card">
+  <form asp-area="Banks" asp-controller="BankDisbursement" asp-action="Record" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="LoanRequestId" />
+    <div class="card-header"><h3 class="card-title">@(existing != null ? "Update" : "Record") Disbursement</h3></div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label asp-for="DisbursementStatus" class="form-label required">Disbursement Status</label>
+          <select asp-for="DisbursementStatus" class="form-select">
+            <option value="FullyDisbursed">Fully Disbursed</option>
+            <option value="PartiallyDisbursed">Partially Disbursed</option>
+          </select>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label asp-for="ValueDate" class="form-label">Value Date</label>
+          <input asp-for="ValueDate" type="date" class="form-control" />
+        </div>
+        <div class="col-md-6 mb-3">
+          <label asp-for="ApprovedAmount" class="form-label required">Approved Amount (Rs.)</label>
+          <input asp-for="ApprovedAmount" type="number" class="form-control" step="1000" readonly />
+        </div>
+        <div class="col-md-6 mb-3">
+          <label asp-for="DisbursedAmount" class="form-label required">Disbursed Amount (Rs.)</label>
+          <input asp-for="DisbursedAmount" type="number" class="form-control" step="1000" />
+          <small class="form-hint">Cannot exceed approved amount.</small>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label asp-for="DisbursementAccount" class="form-label">Disbursement Account / IBAN</label>
+          <input asp-for="DisbursementAccount" class="form-control" />
+        </div>
+        <div class="col-md-6 mb-3">
+          <label asp-for="BankReferenceNumber" class="form-label">Bank Reference Number</label>
+          <input asp-for="BankReferenceNumber" class="form-control" />
+        </div>
+        <div class="col-md-12 mb-3">
+          <label asp-for="Remarks" class="form-label">Remarks</label>
+          <textarea asp-for="Remarks" class="form-control" rows="2"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer text-end">
+      <a asp-area="Banks" asp-controller="BankRequests" asp-action="Detail" asp-route-id="@Model.LoanRequestId" class="btn btn-2 me-2">Cancel</a>
+      <button type="submit" class="btn btn-primary">Record Disbursement</button>
+    </div>
+  </form>
+</div>
+
+@section HeaderActions {
+  <a asp-area="Banks" asp-controller="BankRequests" asp-action="Detail" asp-route-id="@Model.LoanRequestId" class="btn btn-2">Back to Application</a>
+}

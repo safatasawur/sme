@@ -1,0 +1,33 @@
+flowchart TD
+    A([SME Registers]) --> B[Login]
+    B --> C{Profile Complete?}
+    C -- No --> D[Complete Profile with CNIC]
+    D --> E{CNIC Unique?}
+    E -- No --> F[Show Duplicate CNIC Error] --> D
+    E -- Yes --> G[Send Verification Token Email]
+    G --> H[Enter Verification Token]
+    H --> I{Token Valid?}
+    I -- No/Expired --> J[Error - Resend Token] --> H
+    I -- Yes --> K[Profile Verified]
+    C -- Yes --> K
+    K --> L{Profile Verified?}
+    L -- No --> H
+    L -- Yes --> M[Select Published Scheme]
+    M --> N[AJAX Load Form Fields]
+    N --> O[Fill Dynamic Form + Shareholders + Select Bank]
+    O --> P[Submit Loan Application]
+    P --> Q[Generate RequestNo SME-YYYYMMDD-NNNNNN]
+    Q --> R[Save LoanRequest + Shareholders + FieldValues]
+    R --> S[Set Status = Assigned]
+    S --> T[Email to SME + Bank]
+    T --> U[In-App Notification to Bank Officer]
+    U --> V[Bank Officer Reviews Application]
+    V --> W{Bank Decision}
+    W -- In Process --> X[Status Updated + SME Notified]
+    W -- More Info Required --> Y[Status Updated + SME Notified]
+    W -- Approved --> Z[Status=Approved + SME Notified]
+    W -- Rejected --> AA[Status=Rejected + SME Notified]
+    W -- Completed --> BB[Status=Completed + SME Notified]
+    Z --> CC([Application Closed])
+    AA --> CC
+    BB --> CC

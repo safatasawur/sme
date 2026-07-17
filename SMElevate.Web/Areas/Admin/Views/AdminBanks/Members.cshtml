@@ -1,0 +1,26 @@
+@{var bank = ViewBag.Bank as SMElevate.Web.Models.Common.Bank; var allUsers = ViewBag.AllUsers as List<SMElevate.Web.Models.Common.ApplicationUser>; var memberIds = ViewBag.CurrentMemberIds as HashSet<int>;}
+<div class="card mb-3"><div class="card-body"><h3 class="card-title">@bank?.BankName <span class="text-secondary small">— Manage Members</span></h3></div></div>
+<div class="row row-cards">
+  <div class="col-lg-7">
+    <div class="card"><div class="card-header"><h3 class="card-title">Available Users</h3></div>
+    <form asp-area="Admin" asp-controller="AdminBanks" asp-action="AssignMembers" asp-route-id="@bank?.Id" method="post">@Html.AntiForgeryToken()
+    <div class="table-responsive"><table class="table table-vcenter card-table"><thead><tr><th style="width:32px"><input type="checkbox" class="form-check-input" id="sel-all" /></th><th>User</th><th>Type</th></tr></thead><tbody>
+    @foreach (var u in allUsers?.Where(u => !(memberIds?.Contains(u.Id) ?? false)) ?? Enumerable.Empty<SMElevate.Web.Models.Common.ApplicationUser>()) {
+    <tr><td><input type="checkbox" class="form-check-input" name="selectedUserIds" value="@u.Id" /></td>
+    <td><div>@u.FullName</div><div class="text-secondary small">@u.EmailAddress</div></td>
+    <td><span class="badge bg-azure-lt">@u.UserType</span></td></tr>}
+    </tbody></table></div>
+    <div class="card-footer text-end"><button type="submit" class="btn btn-primary">Assign Selected</button></div></form></div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card"><div class="card-header"><h3 class="card-title">Current Members</h3></div>
+    <form asp-area="Admin" asp-controller="AdminBanks" asp-action="RemoveMembers" asp-route-id="@bank?.Id" method="post">@Html.AntiForgeryToken()
+    <div class="table-responsive"><table class="table table-vcenter card-table"><thead><tr><th style="width:32px"><input type="checkbox" class="form-check-input" /></th><th>User</th></tr></thead><tbody>
+    @foreach (var u in allUsers?.Where(u => memberIds?.Contains(u.Id) ?? false) ?? Enumerable.Empty<SMElevate.Web.Models.Common.ApplicationUser>()) {
+    <tr><td><input type="checkbox" class="form-check-input" name="removeUserIds" value="@u.Id" /></td>
+    <td><div>@u.FullName</div><div class="text-secondary small">@u.EmailAddress</div></td></tr>}
+    </tbody></table></div>
+    <div class="card-footer text-end"><button type="submit" class="btn btn-outline-danger">Remove Selected</button></div></form></div>
+  </div>
+</div>
+<script>document.getElementById("sel-all")?.addEventListener("change",function(e){document.querySelectorAll("input[name=selectedUserIds]").forEach(c=>c.checked=e.target.checked)});</script>

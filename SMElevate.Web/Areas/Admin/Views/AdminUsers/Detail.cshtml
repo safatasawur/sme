@@ -1,0 +1,137 @@
+@model SMElevate.Web.Areas.Admin.ViewModels.UserDetailViewModel
+@using SMElevate.Web.Models.Common
+@{
+    var u = Model.User;
+    var p = Model.Profile;
+    var isVerified = p is not null && p.IsVerified;
+    var typeColor = u.UserType switch {
+        UserType.Admin => "bg-purple-lt",
+        UserType.Bank  => "bg-azure-lt",
+        UserType.SBP   => "bg-orange-lt",
+        _              => "bg-teal-lt"
+    };
+}
+
+@section HeaderActions {
+  <div class="btn-list">
+    <a asp-area="Admin" asp-controller="AdminUsers" asp-action="Edit" asp-route-id="@u.Id" class="btn btn-2">Edit User</a>
+    <a asp-area="Admin" asp-controller="AdminUsers" asp-action="Index" class="btn btn-secondary">Back to List</a>
+  </div>
+}
+
+@* ── Account section ──────────────────────────────────────────────── *@
+<div class="card mb-3">
+  <div class="card-header d-flex align-items-center gap-2">
+    <span class="avatar avatar-sm @typeColor me-1">@(u.FullName.Length > 0 ? u.FullName[0].ToString().ToUpper() : "?")</span>
+    <div>
+      <h3 class="card-title mb-0">@u.FullName</h3>
+      <div class="text-secondary small">@u.EmailAddress</div>
+    </div>
+    <div class="ms-auto d-flex gap-2">
+      @if (u.UserType == UserType.SME)
+      {
+        if (isVerified)
+        { <span class="badge bg-green-lt text-green fs-5 px-3 py-2">Verified</span> }
+        else
+        { <span class="badge bg-secondary-lt fs-5 px-3 py-2">Not Verified</span> }
+      }
+      <span class="badge @(u.IsActive ? "bg-green-lt text-green" : "bg-red-lt text-red") fs-5 px-3 py-2">
+        @(u.IsActive ? "Active" : "Inactive")
+      </span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="datagrid">
+      <div class="datagrid-item">
+        <div class="datagrid-title">User Type</div>
+        <div class="datagrid-content"><span class="badge @typeColor">@u.UserType</span></div>
+      </div>
+      <div class="datagrid-item">
+        <div class="datagrid-title">Role</div>
+        <div class="datagrid-content">@(u.Role?.RoleName ?? "—")</div>
+      </div>
+      <div class="datagrid-item">
+        <div class="datagrid-title">Mobile No.</div>
+        <div class="datagrid-content">@(u.MobileNo ?? "—")</div>
+      </div>
+      <div class="datagrid-item">
+        <div class="datagrid-title">Auth Mode</div>
+        <div class="datagrid-content">@(u.AuthenticationMode ?? "—")</div>
+      </div>
+      <div class="datagrid-item">
+        <div class="datagrid-title">Bank</div>
+        <div class="datagrid-content">@(u.Bank?.BankName ?? "—")</div>
+      </div>
+      <div class="datagrid-item">
+        <div class="datagrid-title">Created At</div>
+        <div class="datagrid-content">@u.CreatedAt.ToString("yyyy-MM-dd HH:mm")</div>
+      </div>
+      <div class="datagrid-item">
+        <div class="datagrid-title">Last Login</div>
+        <div class="datagrid-content">@(u.LastLoginAt?.ToString("yyyy-MM-dd HH:mm") ?? "—")</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+@* ── EndUser Profile section ──────────────────────────────────────── *@
+@if (u.UserType == UserType.SME)
+{
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">User Profile</h3>
+      @if (isVerified)
+      { <span class="badge bg-green-lt text-green ms-2">Verified</span> }
+      else if (p is not null)
+      { <span class="badge bg-orange-lt ms-2">Pending Verification</span> }
+      else
+      { <span class="badge bg-secondary-lt ms-2">Not Verified</span> }
+    </div>
+    <div class="card-body">
+      @if (p is null)
+      {
+        <div class="text-secondary py-2">No profile data available.</div>
+      }
+      else
+      {
+        <div class="datagrid">
+          <div class="datagrid-item">
+            <div class="datagrid-title">First Name</div>
+            <div class="datagrid-content">@p.FirstName</div>
+          </div>
+          <div class="datagrid-item">
+            <div class="datagrid-title">Last Name</div>
+            <div class="datagrid-content">@p.LastName</div>
+          </div>
+          <div class="datagrid-item">
+            <div class="datagrid-title">Mobile No.</div>
+            <div class="datagrid-content">@p.MobileNo</div>
+          </div>
+          <div class="datagrid-item">
+            <div class="datagrid-title">CNIC</div>
+            <div class="datagrid-content">@p.CNIC</div>
+          </div>
+          <div class="datagrid-item">
+            <div class="datagrid-title">Business Email</div>
+            <div class="datagrid-content">@p.BusinessEmailAddress</div>
+          </div>
+          <div class="datagrid-item">
+            <div class="datagrid-title">Gender of Proprietor</div>
+            <div class="datagrid-content">@p.GenderOfProprietor</div>
+          </div>
+          <div class="datagrid-item">
+            <div class="datagrid-title">Profile Created</div>
+            <div class="datagrid-content">@p.CreatedAt.ToString("yyyy-MM-dd HH:mm")</div>
+          </div>
+          @if (p.UpdatedAt.HasValue)
+          {
+            <div class="datagrid-item">
+              <div class="datagrid-title">Last Updated</div>
+              <div class="datagrid-content">@p.UpdatedAt.Value.ToString("yyyy-MM-dd HH:mm")</div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+}

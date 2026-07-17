@@ -1,0 +1,39 @@
+@model List<SMElevate.Web.Models.Common.WorkflowTransition>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Workflow Transitions <span class="badge bg-azure-lt ms-2">@Model.Count</span></h3>
+    <div class="card-actions">
+      <span class="text-secondary small">Toggle Active/Inactive to enable or disable a transition</span>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-vcenter card-table">
+      <thead>
+        <tr><th>From Status</th><th>To Status</th><th>Actor Types</th><th>Remarks Required</th><th>Reason Code</th><th>Active</th></tr>
+      </thead>
+      <tbody>
+        @foreach (var t in Model) {
+        <tr>
+          <td><code>@t.FromStatusCode</code></td>
+          <td><code>@t.ToStatusCode</code></td>
+          <td class="text-secondary small">@t.AllowedActorTypes</td>
+          <td>@(t.RequiresRemarks ? "Yes" : "—")</td>
+          <td>@(t.RequiresReasonCode ? "Yes" : "—")</td>
+          <td>
+            <form asp-area="Admin" asp-controller="AdminWorkflow" asp-action="ToggleTransition" method="post" class="d-inline">
+              @Html.AntiForgeryToken()
+              <input type="hidden" name="id" value="@t.Id" />
+              <button type="submit" class="btn btn-sm @(t.IsActive ? "btn-success" : "btn-outline-secondary")">
+                @(t.IsActive ? "Active" : "Inactive")
+              </button>
+            </form>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+@section HeaderActions {
+  <a asp-area="Admin" asp-controller="AdminWorkflow" asp-action="Statuses" class="btn btn-2">View Statuses</a>
+}

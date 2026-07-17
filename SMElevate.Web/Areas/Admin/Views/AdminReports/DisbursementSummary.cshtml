@@ -1,0 +1,29 @@
+@model SMElevate.Web.Services.Interfaces.DisbursementSummaryResult
+@{ var banks = ViewBag.Banks as List<SMElevate.Web.Models.Common.Bank>; }
+<form method="get" class="card mb-3">
+  <div class="card-body"><div class="row g-2">
+    <div class="col-md-3"><input type="date" name="from" value="@ViewBag.From" class="form-control" /></div>
+    <div class="col-md-3"><input type="date" name="to" value="@ViewBag.To" class="form-control" /></div>
+    <div class="col-md-3"><select name="bankId" class="form-select"><option value="">All Banks</option>@foreach(var b in banks??new()){<option value="@b.Id" selected="@(ViewBag.BankId != null && ViewBag.BankId.ToString() == b.Id.ToString() ? "selected" : null)">@b.BankName</option>}</select></div>
+    <div class="col-md-3"><button type="submit" class="btn btn-primary w-100">Filter</button></div>
+  </div></div>
+</form>
+<div class="row row-cards mb-3">
+  <div class="col-sm-6"><div class="card card-sm"><div class="card-body"><div class="fw-medium fs-2 text-green">Rs. @Model.TotalDisbursed.ToString("N0")</div><div class="text-secondary">Total Disbursed</div></div></div></div>
+  <div class="col-sm-6"><div class="card card-sm"><div class="card-body"><div class="fw-medium fs-2">@Model.TotalCases</div><div class="text-secondary">Disbursed Cases</div></div></div></div>
+</div>
+<div class="card">
+  <div class="card-header"><h3 class="card-title">Per-Bank Disbursement</h3></div>
+  <div class="table-responsive">
+    <table class="table table-vcenter card-table">
+      <thead><tr><th>Bank</th><th>Approved Cases</th><th>Total Approved (Rs.)</th><th>Total Disbursed (Rs.)</th></tr></thead>
+      <tbody>
+        @foreach (var r in Model.Rows.OrderByDescending(x => x.DisbursedAmount)) {
+        <tr><td>@r.BankName</td><td>@r.Cases</td><td>Rs. @r.TotalAmount.ToString("N0")</td><td>Rs. @r.DisbursedAmount.ToString("N0")</td></tr>
+        }
+        @if (!Model.Rows.Any()) { <tr><td colspan="4" class="text-center text-secondary">No disbursements in the selected period.</td></tr> }
+      </tbody>
+    </table>
+  </div>
+</div>
+@section HeaderActions { <a asp-area="Admin" asp-controller="AdminReports" asp-action="Index" class="btn btn-2">All Reports</a> }

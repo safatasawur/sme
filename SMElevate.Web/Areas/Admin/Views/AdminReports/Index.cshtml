@@ -1,0 +1,56 @@
+<div class="row row-cards">
+  <div class="col-md-6 col-lg-4">
+    <div class="card card-link card-link-pop">
+      <div class="card-body">
+        <div class="card-title">Application Status Report</div>
+        <div class="text-secondary">Distribution of applications across all workflow statuses.</div>
+        <a asp-area="Admin" asp-controller="AdminReports" asp-action="ApplicationStatus" class="stretched-link"></a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-lg-4">
+    <div class="card card-link card-link-pop">
+      <div class="card-body">
+        <div class="card-title">Turnaround Time Report</div>
+        <div class="text-secondary">Average processing time per bank and across the platform.</div>
+        <a asp-area="Admin" asp-controller="AdminReports" asp-action="TurnaroundTime" class="stretched-link"></a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-lg-4">
+    <div class="card card-link card-link-pop">
+      <div class="card-body">
+        <div class="card-title">Decline Analysis</div>
+        <div class="text-secondary">Breakdown of declined applications by reason code and category.</div>
+        <a asp-area="Admin" asp-controller="AdminReports" asp-action="DeclineAnalysis" class="stretched-link"></a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-lg-4">
+    <div class="card card-link card-link-pop">
+      <div class="card-body">
+        <div class="card-title">Disbursement Summary</div>
+        <div class="text-secondary">Total and per-bank disbursement amounts and counts.</div>
+        <a asp-area="Admin" asp-controller="AdminReports" asp-action="DisbursementSummary" class="stretched-link"></a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-lg-4">
+    <div class="card card-link card-link-pop">
+      <div class="card-body">
+        <div class="card-title">Bank Performance</div>
+        <div class="text-secondary">Per-bank approval rates, turnaround times, and disbursements.</div>
+        <a asp-area="Admin" asp-controller="AdminReports" asp-action="BankPerformance" class="stretched-link"></a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-lg-4">
+    <div class="card card-link card-link-pop">
+      <div class="card-body">
+        <div class="card-title">Geographic Distribution</div>
+        <div class="text-secondary">Applications grouped by city / region based on business address.</div>
+        <a asp-area="Admin" asp-controller="AdminReports" asp-action="GeographicSpread" class="stretched-link"></a>
+      </div>
+    </div>
+  </div>
+</div>

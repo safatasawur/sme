@@ -1,0 +1,151 @@
+@model SMElevate.Web.Areas.EndUser.ViewModels.LoanApplicationDetailViewModel
+@using SMElevate.Web.Models.Common
+@{ var r = Model.Request; }
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="row align-items-center">
+      <div class="col">
+        <div class="text-secondary">Application Reference</div>
+        <div class="h2 mb-0">@(r.CaseId ?? r.RequestNo)</div>
+        <div class="text-secondary mt-1">Submitted: @(r.SubmittedAt?.ToString("yyyy-MM-dd") ?? "Draft")</div>
+      </div>
+      <div class="col-auto"><span class="badge fs-3 p-2 bg-azure-lt">@(r.Status?.ValueText ?? "—")</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Active Offer Banner -->
+@if (Model.ActiveOffer != null) {
+<div class="alert alert-success mb-3">
+  <div class="row align-items-center">
+    <div class="col">
+      <h4 class="alert-heading mb-1">Conditional Offer Available!</h4>
+      <div>Offer <strong>@Model.ActiveOffer.OfferNumber</strong> — Rs. @Model.ActiveOffer.ApprovedAmount.ToString("N0") for @Model.ActiveOffer.TenorMonths months. Expires: @Model.ActiveOffer.ExpiryDate.ToString("yyyy-MM-dd")</div>
+    </div>
+    <div class="col-auto d-flex gap-2">
+      <form asp-area="EndUser" asp-controller="EndUserLoanRequests" asp-action="RespondToOffer" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="OfferId" value="@Model.ActiveOffer.Id" />
+        <input type="hidden" name="ResponseType" value="Accepted" />
+        <button type="submit" class="btn btn-success">Accept Offer</button>
+      </form>
+      <form asp-area="EndUser" asp-controller="EndUserLoanRequests" asp-action="RespondToOffer" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="OfferId" value="@Model.ActiveOffer.Id" />
+        <input type="hidden" name="ResponseType" value="Rejected" />
+        <button type="submit" class="btn btn-outline-danger">Decline Offer</button>
+      </form>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Pending Info Request Banner -->
+@{ var pendingInfo = Model.InfoRequests.Where(ir => ir.Status == AdditionalInfoStatus.Pending).ToList(); }
+@foreach (var ir in pendingInfo) {
+<div class="alert alert-warning mb-3">
+  <div class="fw-bold">Additional Information Required: @ir.Title</div>
+  <div class="mt-1">@ir.Description</div>
+  @if (!string.IsNullOrEmpty(ir.RequiredDocuments)) { <div class="mt-1 small"><strong>Required Documents:</strong> @ir.RequiredDocuments</div> }
+  @if (ir.DueDate.HasValue) { <div class="text-danger small mt-1">Due: @ir.DueDate.Value.ToString("yyyy-MM-dd")</div> }
+  <form asp-area="EndUser" asp-controller="EndUserLoanRequests" asp-action="RespondToInfoRequest" method="post" class="mt-2">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="RequestId" value="@ir.Id" />
+    <div class="mb-2"><textarea name="Response" class="form-control" rows="3" placeholder="Your response…" required></textarea></div>
+    <button type="submit" class="btn btn-warning btn-sm">Submit Response</button>
+  </form>
+</div>
+}
+
+<div class="row row-cards">
+  <div class="col-md-6">
+    <div class="card mb-3">
+      <div class="card-header"><h3 class="card-title">Business Details</h3></div>
+      <div class="card-body">
+        <div class="datagrid">
+          <div class="datagrid-item"><div class="datagrid-title">Name of Business</div><div class="datagrid-content">@r.NameOfBusiness</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Contact Person</div><div class="datagrid-content">@r.ContactPerson</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Business Address</div><div class="datagrid-content">@r.BusinessAddress</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Business Nature</div><div class="datagrid-content">@r.BusinessNature</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Annual Sales</div><div class="datagrid-content">Rs. @r.AnnualSales.ToString("N0")</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">No. of Employees</div><div class="datagrid-content">@r.NoOfEmployees</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card mb-3">
+      <div class="card-header"><h3 class="card-title">Facility &amp; Bank</h3></div>
+      <div class="card-body">
+        <div class="datagrid">
+          <div class="datagrid-item"><div class="datagrid-title">Facility Requested</div><div class="datagrid-content">@r.FacilityRequested</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Type of Facility</div><div class="datagrid-content">@r.TypeOfFacility</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Amount</div><div class="datagrid-content">Rs. @r.Amount.ToString("N0")</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Tenor</div><div class="datagrid-content">@r.Tenor months</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Assigned Bank</div><div class="datagrid-content">@(r.AssignedBank?.BankName ?? "Not yet assigned")</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Disbursement info (if available) -->
+    @if (Model.Disbursement != null) {
+    <div class="card mb-3">
+      <div class="card-header"><h3 class="card-title">Disbursement</h3></div>
+      <div class="card-body">
+        <div class="datagrid">
+          <div class="datagrid-item"><div class="datagrid-title">Status</div><div class="datagrid-content"><span class="badge bg-green-lt">@Model.Disbursement.DisbursementStatus</span></div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Amount</div><div class="datagrid-content">Rs. @(Model.Disbursement.DisbursedAmount?.ToString("N0") ?? "—")</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Value Date</div><div class="datagrid-content">@(Model.Disbursement.ValueDate?.ToString("yyyy-MM-dd") ?? "—")</div></div>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+</div>
+
+<!-- Offers history -->
+@if (Model.AllOffers.Any()) {
+<div class="card mb-3">
+  <div class="card-header"><h3 class="card-title">Conditional Offers</h3></div>
+  <div class="table-responsive">
+    <table class="table table-vcenter card-table">
+      <thead><tr><th>Offer No.</th><th>Amount</th><th>Tenor</th><th>Expiry</th><th>Status</th></tr></thead>
+      <tbody>
+        @foreach (var o in Model.AllOffers.OrderByDescending(x => x.IssueDate)) {
+        <tr>
+          <td>@o.OfferNumber</td>
+          <td>Rs. @o.ApprovedAmount.ToString("N0")</td>
+          <td>@o.TenorMonths months</td>
+          <td>@o.ExpiryDate.ToString("yyyy-MM-dd")</td>
+          <td><span class="badge @(o.Status == OfferStatus.Accepted ? "bg-green-lt" : o.Status == OfferStatus.Rejected || o.Status == OfferStatus.Expired ? "bg-red-lt" : "bg-blue-lt")">@o.Status</span></td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+}
+
+<!-- Status History -->
+<div class="card mb-3">
+  <div class="card-header"><h3 class="card-title">Application Timeline</h3></div>
+  <div class="table-responsive">
+    <table class="table table-vcenter card-table">
+      <thead><tr><th>Status</th><th>Remarks</th><th>Date</th></tr></thead>
+      <tbody>
+        @foreach (var h in Model.StatusHistory.OrderByDescending(x => x.CreatedAt)) {
+        <tr>
+          <td><span class="badge bg-azure-lt">@(h.NewStatus?.ValueText ?? "—")</span></td>
+          <td class="text-secondary small">@(h.Remarks ?? "—")</td>
+          <td class="text-secondary small">@h.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+        </tr>
+        }
+        @if (!Model.StatusHistory.Any()) { <tr><td colspan="3" class="text-center text-secondary">No history yet.</td></tr> }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+@section HeaderActions {
+  <a asp-area="EndUser" asp-controller="EndUserLoanRequests" asp-action="MyApplications" class="btn btn-2">Back to My Applications</a>
+}

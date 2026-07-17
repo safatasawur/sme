@@ -1,0 +1,261 @@
+@model SMElevate.Web.Areas.Banks.ViewModels.BankApplicationDetailViewModel
+@using SMElevate.Web.Models.Common
+@{ var r = Model.Request; }
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="row align-items-center">
+      <div class="col">
+        <div class="text-secondary">Case ID</div>
+        <div class="h2 mb-0">@(r.CaseId ?? r.RequestNo)</div>
+        <div class="text-secondary mt-1">Request No: @r.RequestNo &nbsp;|&nbsp; Submitted: @(r.SubmittedAt?.ToString("yyyy-MM-dd") ?? r.CreatedAt.ToString("yyyy-MM-dd"))</div>
+      </div>
+      <div class="col-auto"><span class="badge fs-3 p-2 bg-azure-lt">@(r.Status?.ValueText ?? "—")</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="row row-cards">
+  <div class="col-lg-8">
+    <!-- Business Details -->
+    <div class="card mb-3">
+      <div class="card-header"><h3 class="card-title">Business Details</h3></div>
+      <div class="card-body">
+        <div class="datagrid">
+          <div class="datagrid-item"><div class="datagrid-title">Name of Business</div><div class="datagrid-content">@r.NameOfBusiness</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Contact Person</div><div class="datagrid-content">@r.ContactPerson</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Cell / Landline No.</div><div class="datagrid-content">@r.CellOrLandlineNo</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Business Address</div><div class="datagrid-content">@r.BusinessAddress</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Annual Sales</div><div class="datagrid-content">Rs. @r.AnnualSales.ToString("N0")</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Year Established</div><div class="datagrid-content">@r.YearOfEstablishment</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Employees</div><div class="datagrid-content">@r.NoOfEmployees</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">NTN No.</div><div class="datagrid-content">@(r.NTNNo ?? "N/A")</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Business Nature</div><div class="datagrid-content">@r.BusinessNature</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Business Status</div><div class="datagrid-content">@r.BusinessStatus</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Business Premise</div><div class="datagrid-content">@r.BusinessPremise</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Registered</div><div class="datagrid-content">@(r.IsBusinessRegistered ? "Yes" : "No") @(r.RegistrationAuthority != null ? $"— {r.RegistrationAuthority}" : "")</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shareholders -->
+    @if (r.Shareholders?.Any() ?? false) {
+    <div class="card mb-3">
+      <div class="card-header"><h3 class="card-title">Shareholding Details</h3></div>
+      <div class="table-responsive">
+        <table class="table table-vcenter card-table">
+          <thead><tr><th>Name</th><th>CNIC</th><th>Contact</th><th>Shareholding</th></tr></thead>
+          <tbody>
+            @foreach (var sh in r.Shareholders) {
+            <tr><td>@sh.Name</td><td>@sh.CNIC</td><td>@sh.ContactNo</td><td>@sh.ShareholdingPercentage%</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+    }
+
+    <!-- Facility Details -->
+    <div class="card mb-3">
+      <div class="card-header"><h3 class="card-title">Facility &amp; Account Details</h3></div>
+      <div class="card-body">
+        <div class="datagrid">
+          <div class="datagrid-item"><div class="datagrid-title">Facility Requested</div><div class="datagrid-content">@r.FacilityRequested</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Type of Facility</div><div class="datagrid-content">@r.TypeOfFacility</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Amount</div><div class="datagrid-content">Rs. @r.Amount.ToString("N0")</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Tenor</div><div class="datagrid-content">@r.Tenor months</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">IBAN / RAAST Type</div><div class="datagrid-content">@r.IBANOrRaastType</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">IBAN / RAAST Value</div><div class="datagrid-content">@r.IBANOrRaastValue</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Assessments -->
+    @if (Model.Assessments.Any()) {
+    <div class="card mb-3">
+      <div class="card-header"><h3 class="card-title">Assessments</h3>
+        <div class="card-actions"><a asp-area="Banks" asp-controller="BankAssessment" asp-action="Index" asp-route-loanRequestId="@r.Id" class="btn btn-sm btn-outline-primary">Manage</a></div>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-vcenter card-table">
+          <thead><tr><th>Type</th><th>Status</th><th>Completed</th><th>Remarks</th></tr></thead>
+          <tbody>
+            @foreach (var a in Model.Assessments) {
+            <tr>
+              <td>@a.AssessmentType</td>
+              <td><span class="badge @(a.Status == AssessmentStatus.Completed ? "bg-green-lt" : a.Status == AssessmentStatus.InProgress ? "bg-yellow-lt" : "bg-red-lt")">@a.Status</span></td>
+              <td>@(a.CompletionDate?.ToString("yyyy-MM-dd") ?? "—")</td>
+              <td class="text-secondary small">@(a.Remarks ?? "—")</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+    }
+
+    <!-- Bank Decision -->
+    @if (Model.Decision != null) {
+    <div class="card mb-3">
+      <div class="card-header"><h3 class="card-title">Formal Decision</h3></div>
+      <div class="card-body">
+        <div class="datagrid">
+          <div class="datagrid-item"><div class="datagrid-title">Decision</div><div class="datagrid-content"><span class="badge @(Model.Decision.DecisionType == DecisionType.Declined ? "bg-red-lt" : "bg-green-lt")">@Model.Decision.DecisionType</span></div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Date</div><div class="datagrid-content">@Model.Decision.DecisionDate.ToString("yyyy-MM-dd")</div></div>
+          @if (Model.Decision.ApprovedAmount > 0) {
+          <div class="datagrid-item"><div class="datagrid-title">Approved Amount</div><div class="datagrid-content">Rs. @(Model.Decision.ApprovedAmount?.ToString("N0") ?? "—")</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Approved Tenor</div><div class="datagrid-content">@Model.Decision.ApprovedTenorMonths months</div></div>
+          }
+          <div class="datagrid-item"><div class="datagrid-title">Remarks</div><div class="datagrid-content">@(Model.Decision.DecisionRemarks ?? "—")</div></div>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Conditional Offers -->
+    @if (Model.Offers.Any()) {
+    <div class="card mb-3">
+      <div class="card-header"><h3 class="card-title">Conditional Offers</h3></div>
+      <div class="table-responsive">
+        <table class="table table-vcenter card-table">
+          <thead><tr><th>Offer No.</th><th>Version</th><th>Amount</th><th>Expiry</th><th>Status</th></tr></thead>
+          <tbody>
+            @foreach (var o in Model.Offers.OrderByDescending(x => x.IssueDate)) {
+            <tr>
+              <td>@o.OfferNumber</td>
+              <td>v@o.OfferVersion</td>
+              <td>Rs. @o.ApprovedAmount.ToString("N0")</td>
+              <td>@o.ExpiryDate.ToString("yyyy-MM-dd")</td>
+              <td><span class="badge bg-blue-lt">@o.Status</span></td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+    }
+
+    <!-- Disbursement -->
+    @if (Model.Disbursement != null) {
+    <div class="card mb-3">
+      <div class="card-header"><h3 class="card-title">Disbursement</h3>
+        <div class="card-actions"><a asp-area="Banks" asp-controller="BankDisbursement" asp-action="Index" asp-route-loanRequestId="@r.Id" class="btn btn-sm btn-outline-primary">Update</a></div>
+      </div>
+      <div class="card-body">
+        <div class="datagrid">
+          <div class="datagrid-item"><div class="datagrid-title">Status</div><div class="datagrid-content">@Model.Disbursement.DisbursementStatus</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Disbursed</div><div class="datagrid-content">Rs. @(Model.Disbursement.DisbursedAmount?.ToString("N0") ?? "—")</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Value Date</div><div class="datagrid-content">@(Model.Disbursement.ValueDate?.ToString("yyyy-MM-dd") ?? "—")</div></div>
+          <div class="datagrid-item"><div class="datagrid-title">Bank Ref</div><div class="datagrid-content">@(Model.Disbursement.BankReferenceNumber ?? "—")</div></div>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Status History -->
+    <div class="card mb-3">
+      <div class="card-header"><h3 class="card-title">Status History</h3></div>
+      <div class="table-responsive">
+        <table class="table table-vcenter card-table">
+          <thead><tr><th>Status</th><th>Actor</th><th>Remarks</th><th>Date</th></tr></thead>
+          <tbody>
+            @foreach (var h in Model.StatusHistory.OrderByDescending(x => x.CreatedAt)) {
+            <tr>
+              <td><span class="badge bg-azure-lt">@(h.NewStatus?.ValueText ?? "—")</span></td>
+              <td class="text-secondary small">@(h.ActorType ?? "—")</td>
+              <td class="text-secondary small">@(h.Remarks ?? "—")</td>
+              <td class="text-secondary small">@h.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Additional Info Requests -->
+    @if (Model.InfoRequests.Any()) {
+    <div class="card mb-3">
+      <div class="card-header"><h3 class="card-title">Additional Information Requests</h3></div>
+      <div class="list-group list-group-flush">
+        @foreach (var ir in Model.InfoRequests) {
+        <div class="list-group-item">
+          <div class="row align-items-center">
+            <div class="col"><div class="fw-medium">@ir.Title</div><div class="text-secondary small">@ir.Description</div>
+              @if (!string.IsNullOrEmpty(ir.ApplicantResponse)) { <div class="mt-1 small"><strong>Response:</strong> @ir.ApplicantResponse</div> }
+            </div>
+            <div class="col-auto">
+              <span class="badge @(ir.Status == AdditionalInfoStatus.Responded ? "bg-green-lt" : ir.Status == AdditionalInfoStatus.Closed ? "bg-secondary-lt" : "bg-yellow-lt")">@ir.Status</span>
+              @if (ir.Status == AdditionalInfoStatus.Responded) {
+              <form asp-area="Banks" asp-controller="BankAdditionalInfo" asp-action="Close" method="post" class="d-inline ms-1">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@ir.Id" />
+                <button type="submit" class="btn btn-sm btn-outline-secondary">Close</button>
+              </form>
+              }
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+    <!-- Checklist -->
+    @if (Model.Checklist != null) {
+    <div class="card mb-3">
+      <div class="card-header"><h3 class="card-title">Post-Approval Checklist</h3>
+        <div class="card-actions"><a asp-area="Banks" asp-controller="BankPostApproval" asp-action="Index" asp-route-loanRequestId="@r.Id" class="btn btn-sm btn-outline-primary">Manage</a></div>
+      </div>
+      <div class="card-body text-secondary">@Model.Checklist.Items.Count(i => i.VerificationStatus == ChecklistItemStatus.Verified) / @Model.Checklist.Items.Count items verified</div>
+    </div>
+    }
+  </div>
+
+  <div class="col-lg-4">
+    <!-- Quick Actions -->
+    <div class="card mb-3">
+      <div class="card-header"><h3 class="card-title">Actions</h3></div>
+      <div class="card-body d-grid gap-2">
+        @if (!Model.Assessments.Any(a => a.Status == AssessmentStatus.Completed)) {
+        <a asp-area="Banks" asp-controller="BankAssessment" asp-action="Index" asp-route-loanRequestId="@r.Id" class="btn btn-outline-primary">Assessment</a>
+        }
+        @if (Model.Decision == null) {
+        <a asp-area="Banks" asp-controller="BankDecision" asp-action="Index" asp-route-loanRequestId="@r.Id" class="btn btn-outline-warning">Record Decision</a>
+        }
+        @if (!Model.InfoRequests.Any(ir => ir.Status == AdditionalInfoStatus.Pending)) {
+        <a asp-area="Banks" asp-controller="BankAdditionalInfo" asp-action="Create" asp-route-loanRequestId="@r.Id" class="btn btn-outline-info">Request Info</a>
+        }
+        @if (Model.Decision != null && Model.Decision.DecisionType == DecisionType.ConditionallyApproved && !Model.Offers.Any(o => o.Status == OfferStatus.Issued)) {
+        <a asp-area="Banks" asp-controller="BankConditionalOffer" asp-action="Create" asp-route-loanRequestId="@r.Id" class="btn btn-outline-success">Issue Offer</a>
+        }
+        @if (Model.Checklist == null && Model.Decision != null) {
+        <a asp-area="Banks" asp-controller="BankPostApproval" asp-action="Index" asp-route-loanRequestId="@r.Id" class="btn btn-outline-secondary">Post-Approval Checklist</a>
+        }
+        @if (Model.Disbursement == null && r.Status?.ValueText == AppStatus.ReadyForDisbursement) {
+        <a asp-area="Banks" asp-controller="BankDisbursement" asp-action="Index" asp-route-loanRequestId="@r.Id" class="btn btn-success">Record Disbursement</a>
+        }
+      </div>
+    </div>
+
+    <!-- Allowed Workflow Transitions -->
+    @if (Model.AllowedTransitions.Any()) {
+    <div class="card mb-3">
+      <div class="card-header"><h3 class="card-title">Advance Status</h3></div>
+      <div class="list-group list-group-flush">
+        @foreach (var t in Model.AllowedTransitions) {
+        <div class="list-group-item py-1">
+          <form asp-area="Banks" asp-controller="BankRequests" asp-action="SubmitDecision" method="post" class="d-flex align-items-center gap-2">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="RequestId" value="@r.Id" />
+            <span class="flex-fill text-secondary small"><code>→ @t.ToStatusCode</code></span>
+          </form>
+        </div>
+        }
+      </div>
+    </div>
+    }
+  </div>
+</div>
+
+@section HeaderActions {
+  <a asp-area="Banks" asp-controller="BankRequests" asp-action="Assigned" class="btn btn-2">Back to List</a>
+}

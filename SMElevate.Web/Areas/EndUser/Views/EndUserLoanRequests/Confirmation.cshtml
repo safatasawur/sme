@@ -1,0 +1,18 @@
+@model SMElevate.Web.Models.Common.LoanRequest
+<div class="text-center mb-4"><span class="bg-green-lt avatar avatar-xl rounded-circle"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-3 text-green"><path d="M5 12l5 5l10 -10" /></svg></span></div>
+<div class="card card-md mx-auto" style="max-width:600px"><div class="card-body">
+  <h2 class="text-center mb-2">Application Submitted Successfully</h2>
+  <p class="text-secondary text-center mb-4">Your SME loan request has been submitted and routed to the selected bank.</p>
+  <div class="datagrid text-start mb-4">
+    <div class="datagrid-item"><div class="datagrid-title">Request ID</div><div class="datagrid-content fw-bold">@Model.RequestNo</div></div>
+    <div class="datagrid-item"><div class="datagrid-title">Business Name</div><div class="datagrid-content">@Model.NameOfBusiness</div></div>
+    <div class="datagrid-item"><div class="datagrid-title">Selected Bank</div><div class="datagrid-content">@(Model.AssignedBank?.BankName ?? "—")</div></div>
+    <div class="datagrid-item"><div class="datagrid-title">Facility Amount</div><div class="datagrid-content">Rs. @Model.Amount.ToString("N0")</div></div>
+    <div class="datagrid-item"><div class="datagrid-title">Submitted Date</div><div class="datagrid-content">@(Model.SubmittedAt?.ToString("yyyy-MM-dd") ?? DateTime.Today.ToString("yyyy-MM-dd"))</div></div>
+    <div class="datagrid-item"><div class="datagrid-title">Status</div><div class="datagrid-content"><span class="badge bg-azure-lt">@(Model.Status?.ValueText ?? "Assigned")</span></div></div>
+  </div>
+  <div class="btn-list justify-content-center">
+    <a asp-area="EndUser" asp-controller="EndUserDashboard" asp-action="Index" class="btn">Back to Dashboard</a>
+    <a asp-area="EndUser" asp-controller="EndUserLoanRequests" asp-action="Detail" asp-route-requestNo="@Model.RequestNo" class="btn btn-primary">View Application Detail</a>
+  </div>
+</div></div>

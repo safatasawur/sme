@@ -1,0 +1,235 @@
+@model List<SMElevate.Web.Areas.Admin.ViewModels.FormFieldConfigRowViewModel>
+@{
+    int? schemeId = ViewBag.SelectedSchemeId as int?;
+    var allSchemes = (ViewBag.AllSchemes as List<SMElevate.Web.Models.Common.Scheme>) ?? new();
+    bool hasScheme = schemeId.HasValue;
+}
+
+@* ── Scheme selector ──────────────────────────────────────────────────────── *@
+<div class="card mb-3">
+  <div class="card-body py-3">
+    <form method="get" asp-area="Admin" asp-controller="AdminFormBuilder" asp-action="Index"
+          class="row g-3 align-items-center">
+      <div class="col-md-5">
+        <label class="form-label mb-1">Select Scheme</label>
+        <select name="schemeId" class="form-select" onchange="this.form.submit()">
+          <option value="">— Choose a scheme —</option>
+          @foreach (var s in allSchemes)
+          {
+            if (s.Id == schemeId) { <option value="@s.Id" selected>@s.SchemeName (@s.Status)</option> }
+            else                  { <option value="@s.Id">@s.SchemeName (@s.Status)</option> }
+          }
+        </select>
+      </div>
+      @if (hasScheme)
+      {
+        var sel = allSchemes.FirstOrDefault(s => s.Id == schemeId);
+        if (sel != null)
+        {
+          <div class="col-auto text-secondary small">
+            Configuring: <strong>@sel.SchemeName</strong>
+          </div>
+        }
+      }
+    </form>
+  </div>
+</div>
+
+@if (TempData["Success"] is string msg)
+{
+  <div class="alert alert-success alert-dismissible mb-3">
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    @msg
+  </div>
+}
+
+@if (!hasScheme)
+{
+  <div class="card">
+    <div class="card-body text-center py-5">
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="1.5" class="icon text-secondary mb-3 opacity-50">
+        <path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2"/>
+        <rect x="9" y="3" width="6" height="4" rx="2"/>
+      </svg>
+      <p class="text-secondary mb-0">Select a scheme above to configure its application form fields.</p>
+    </div>
+  </div>
+}
+else
+{
+<form id="save-form" method="post" asp-area="Admin" asp-controller="AdminFormBuilder" asp-action="Save">
+  @Html.AntiForgeryToken()
+  <input type="hidden" name="schemeId"    value="@schemeId" />
+  <input type="hidden" name="configsJson" id="h-configs-json" />
+
+  @* ── Legend + top Save ───────────────────────────────────────────────────── *@
+  <div class="d-flex align-items-center mb-3 flex-wrap gap-2">
+    <div class="text-secondary small">
+      <span class="badge bg-green-lt me-1">Available</span> Field shows for EndUser.&nbsp;&nbsp;
+      <span class="badge bg-blue-lt me-1">Required</span> Validation enforced.&nbsp;&nbsp;
+      <span class="badge bg-orange-lt me-1">Conditional</span> Hidden until condition is met.
+    </div>
+    <div class="ms-auto">
+      <button type="button" class="btn btn-primary" onclick="saveConfigs()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" class="icon me-1">
+          <path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2"/>
+          <polyline points="14 2 14 8 8 8"/>
+        </svg>
+        Save Configuration
+      </button>
+    </div>
+  </div>
+
+  @* ── Fields section-by-section ─────────────────────────────────────────── *@
+  @{
+    var grouped = Model
+        .GroupBy(f => new { f.SectionName, f.SectionOrder })
+        .OrderBy(g => g.Key.SectionOrder)
+        .ToList();
+  }
+
+  @foreach (var grp in grouped)
+  {
+    <div class="card mb-3">
+      <div class="card-header">
+        <h3 class="card-title">@grp.Key.SectionName</h3>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-vcenter card-table">
+          <thead>
+            <tr>
+              <th style="width:32px">#</th>
+              <th>Field</th>
+              <th style="width:100px">Type</th>
+              <th style="width:90px">Values From</th>
+              <th class="text-center" style="width:90px">Available</th>
+              <th class="text-center" style="width:90px">Required</th>
+              <th class="text-center" style="width:110px">Conditional?</th>
+              <th>Condition <small class="text-secondary fw-normal">(e.g. IsBusinessRegistered = Yes)</small></th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach (var f in grp.OrderBy(f => f.DisplayOrder))
+            {
+              <tr data-field="@f.FieldName">
+                <td class="text-secondary">@f.DisplayOrder</td>
+                <td>
+                  <div class="fw-medium">@f.FieldLabel</div>
+                  <code class="text-secondary" style="font-size:11px">@f.FieldName</code>
+                </td>
+                <td><span class="badge bg-secondary-lt">@f.FieldType</span></td>
+                <td>
+                  @if (f.LookupKey != null)
+                  {
+                    <span class="badge bg-azure-lt">Lookup</span>
+                    <div class="text-secondary" style="font-size:10px">@f.LookupKey</div>
+                  }
+                  else if (f.FieldType == "bank_select")
+                  { <span class="badge bg-yellow-lt">Banks</span> }
+                  else if (f.FieldType == "shareholder_group")
+                  { <span class="badge bg-pink-lt">Table</span> }
+                  else { <span class="text-secondary">—</span> }
+                </td>
+                <td class="text-center">
+                  <input class="form-check-input cb-available" type="checkbox"
+                         data-field="@f.FieldName"
+                         @(f.IsAvailable ? "checked" : "")
+                         onchange="onAvailableChange('@f.FieldName', this.checked)" />
+                </td>
+                <td class="text-center">
+                  <input class="form-check-input cb-required" type="checkbox"
+                         data-field="@f.FieldName"
+                         @(f.IsRequired ? "checked" : "")
+                         @(!f.IsAvailable ? "disabled" : "") />
+                </td>
+                <td class="text-center">
+                  <select class="form-select form-select-sm sel-cond"
+                          data-field="@f.FieldName"
+                          onchange="onCondChange('@f.FieldName', this.value)"
+                          @(!f.IsAvailable ? "disabled" : "")>
+                    @if (f.HasConditionalVisibility)
+                    {
+                      <option value="no">No</option>
+                      <option value="yes" selected>Yes</option>
+                    }
+                    else
+                    {
+                      <option value="no" selected>No</option>
+                      <option value="yes">Yes</option>
+                    }
+                  </select>
+                </td>
+                <td>
+                  <input type="text" class="form-control form-control-sm txt-cond-expr"
+                         data-field="@f.FieldName"
+                         value="@(f.ConditionalExpression ?? "")"
+                         placeholder="FieldName = Value"
+                         @(!f.HasConditionalVisibility || !f.IsAvailable ? "disabled" : "") />
+                  <div class="form-text text-secondary" style="font-size:10px">Format: FieldName = Value</div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+
+  <div class="d-flex justify-content-end mb-4">
+    <button type="button" class="btn btn-primary btn-lg" onclick="saveConfigs()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" class="icon me-1">
+        <path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2"/>
+        <polyline points="14 2 14 8 8 8"/>
+      </svg>
+      Save Configuration
+    </button>
+  </div>
+</form>
+
+@section Scripts {
+<script>
+function onAvailableChange(fn, checked) {
+  ['cb-required', 'sel-cond', 'txt-cond-expr'].forEach(function(cls) {
+    var el = document.querySelector('[data-field="' + fn + '"].' + cls);
+    if (el) el.disabled = !checked;
+  });
+  if (!checked) {
+    var condSel = document.querySelector('[data-field="' + fn + '"].sel-cond');
+    if (condSel) { condSel.value = 'no'; onCondChange(fn, 'no'); }
+  }
+}
+
+function onCondChange(fn, val) {
+  var exprEl  = document.querySelector('[data-field="' + fn + '"].txt-cond-expr');
+  var availEl = document.querySelector('[data-field="' + fn + '"].cb-available');
+  if (!exprEl) return;
+  var isAvail = availEl && !availEl.disabled && availEl.checked;
+  exprEl.disabled = (val !== 'yes') || !isAvail;
+  if (val !== 'yes') exprEl.value = '';
+}
+
+function saveConfigs() {
+  var rows    = document.querySelectorAll('tr[data-field]');
+  var configs = Array.from(rows).map(function(row) {
+    var fn      = row.getAttribute('data-field');
+    var availEl = row.querySelector('.cb-available');
+    var reqEl   = row.querySelector('.cb-required');
+    var condEl  = row.querySelector('.sel-cond');
+    var exprEl  = row.querySelector('.txt-cond-expr');
+    return {
+      fieldName:               fn,
+      isAvailable:             availEl ? availEl.checked       : true,
+      isRequired:              reqEl   ? reqEl.checked         : true,
+      hasConditionalVisibility: condEl  ? condEl.value === 'yes' : false,
+      conditionalExpression:   exprEl  ? exprEl.value.trim() || null : null
+    };
+  });
+  document.getElementById('h-configs-json').value = JSON.stringify(configs);
+  document.getElementById('save-form').submit();
+}
+</script>
+}
+}

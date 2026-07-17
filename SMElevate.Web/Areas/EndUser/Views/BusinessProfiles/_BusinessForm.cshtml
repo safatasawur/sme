@@ -1,0 +1,291 @@
+@* Shared partial for Create and Edit forms *@
+@model SMElevate.Web.Areas.EndUser.ViewModels.BusinessProfileFormViewModel
+@{
+    bool isPartnership = Model.BusinessStatus == "Partnership";
+    bool isRegistered  = Model.IsBusinessRegistered == "Yes";
+}
+
+<div class="card mb-3">
+  <div class="card-header"><h4 class="card-title mb-0">Business Information</h4></div>
+  <div class="card-body">
+    <div class="row g-3">
+
+      <div class="col-md-6">
+        <label asp-for="NameOfBusiness" class="form-label required"></label>
+        <input asp-for="NameOfBusiness" class="form-control" />
+        <span asp-validation-for="NameOfBusiness" class="text-danger small"></span>
+      </div>
+
+      <div class="col-md-6">
+        <label asp-for="OwnerCNIC" class="form-label required"></label>
+        <input asp-for="OwnerCNIC" class="form-control" placeholder="xxxxx-xxxxxxx-x" />
+        <span asp-validation-for="OwnerCNIC" class="text-danger small"></span>
+      </div>
+
+      <div class="col-md-6">
+        <label asp-for="ContactPerson" class="form-label required"></label>
+        <input asp-for="ContactPerson" class="form-control" />
+        <span asp-validation-for="ContactPerson" class="text-danger small"></span>
+      </div>
+
+      <div class="col-md-6">
+        <label asp-for="CellOrLandlineNo" class="form-label required"></label>
+        <input asp-for="CellOrLandlineNo" class="form-control" />
+        <span asp-validation-for="CellOrLandlineNo" class="text-danger small"></span>
+      </div>
+
+      <div class="col-md-6">
+        <label asp-for="BusinessEmailAddress" class="form-label required"></label>
+        <input asp-for="BusinessEmailAddress" class="form-control" type="email" />
+        <span asp-validation-for="BusinessEmailAddress" class="text-danger small"></span>
+      </div>
+
+      <div class="col-md-6">
+        <label asp-for="NTNNo" class="form-label"></label>
+        <input asp-for="NTNNo" class="form-control" />
+        <span asp-validation-for="NTNNo" class="text-danger small"></span>
+      </div>
+
+      <div class="col-12">
+        <label asp-for="BusinessAddress" class="form-label required"></label>
+        <textarea asp-for="BusinessAddress" class="form-control" rows="2"></textarea>
+        <span asp-validation-for="BusinessAddress" class="text-danger small"></span>
+      </div>
+
+      <div class="col-md-4">
+        <label asp-for="AnnualSales" class="form-label required"></label>
+        <input asp-for="AnnualSales" class="form-control" type="number" min="0" step="1" />
+        <span asp-validation-for="AnnualSales" class="text-danger small"></span>
+      </div>
+
+      <div class="col-md-4">
+        <label asp-for="YearOfEstablishment" class="form-label required"></label>
+        <input asp-for="YearOfEstablishment" class="form-control" type="number" min="1900" max="2099" />
+        <span asp-validation-for="YearOfEstablishment" class="text-danger small"></span>
+      </div>
+
+      <div class="col-md-4">
+        <label asp-for="NoOfEmployees" class="form-label required"></label>
+        <input asp-for="NoOfEmployees" class="form-control" type="number" min="0" />
+        <span asp-validation-for="NoOfEmployees" class="text-danger small"></span>
+      </div>
+
+      <div class="col-md-4">
+        <label asp-for="BusinessPremise" class="form-label required"></label>
+        <select asp-for="BusinessPremise" class="form-select">
+          <option value="">-- Select --</option>
+          @foreach (var v in Model.BusinessPremises)
+          {
+            <option value="@v.ValueText" selected="@(Model.BusinessPremise == v.ValueText ? "selected" : null)">@v.ValueText</option>
+          }
+        </select>
+        <span asp-validation-for="BusinessPremise" class="text-danger small"></span>
+      </div>
+
+      <div class="col-md-4">
+        <label asp-for="BusinessNature" class="form-label required"></label>
+        <select asp-for="BusinessNature" class="form-select">
+          <option value="">-- Select --</option>
+          @foreach (var v in Model.BusinessNatures)
+          {
+            <option value="@v.ValueText" selected="@(Model.BusinessNature == v.ValueText ? "selected" : null)">@v.ValueText</option>
+          }
+        </select>
+        <span asp-validation-for="BusinessNature" class="text-danger small"></span>
+      </div>
+
+      @* Business Status — drives Shareholders section visibility *@
+      <div class="col-md-4">
+        <label asp-for="BusinessStatus" class="form-label required"></label>
+        <select asp-for="BusinessStatus" class="form-select" id="businessStatusSelect">
+          <option value="">-- Select --</option>
+          @foreach (var v in Model.BusinessStatuses)
+          {
+            <option value="@v.ValueText" selected="@(Model.BusinessStatus == v.ValueText ? "selected" : null)">@v.ValueText</option>
+          }
+        </select>
+        <span asp-validation-for="BusinessStatus" class="text-danger small"></span>
+      </div>
+
+      @* Is Registered — drives Registration Authority visibility *@
+      <div class="col-md-6">
+        <label asp-for="IsBusinessRegistered" class="form-label required"></label>
+        <select asp-for="IsBusinessRegistered" class="form-select" id="isRegisteredSelect">
+          <option value="">-- Select --</option>
+          <option value="Yes" selected="@(isRegistered ? "selected" : null)">Yes</option>
+          <option value="No"  selected="@(!isRegistered && Model.IsBusinessRegistered != "" ? "selected" : null)">No</option>
+        </select>
+        <span asp-validation-for="IsBusinessRegistered" class="text-danger small"></span>
+      </div>
+
+      @* Registration Authority — conditional *@
+      <div class="col-md-6" id="regAuthorityRow" style="@(isRegistered ? "" : "display:none")">
+        <label asp-for="RegistrationAuthority" class="form-label @(isRegistered ? "required" : "")"></label>
+        <input asp-for="RegistrationAuthority" class="form-control" id="regAuthorityInput" />
+        <span asp-validation-for="RegistrationAuthority" class="text-danger small"></span>
+      </div>
+
+      <div class="col-12">
+        <label asp-for="BusinessDescription" class="form-label required"></label>
+        <textarea asp-for="BusinessDescription" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="BusinessDescription" class="text-danger small"></span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+@* ── Shareholders / Partners (shown only when BusinessStatus = Partnership) ── *@
+<div class="card mb-3" id="shareholdersCard" style="@(isPartnership ? "" : "display:none")">
+  <div class="card-header d-flex align-items-center">
+    <h4 class="card-title mb-0">
+      Shareholders / Partners
+      <span class="badge bg-red-lt ms-2 small">Required for Partnership</span>
+    </h4>
+    <button type="button" class="btn btn-sm btn-outline-secondary ms-auto" id="addShareholderBtn">+ Add Shareholder</button>
+  </div>
+  @if (ViewData.ModelState["Shareholders"]?.Errors.Count > 0)
+  {
+    <div class="card-body pb-0">
+      <div class="alert alert-danger py-2 mb-0">@ViewData.ModelState["Shareholders"]!.Errors[0].ErrorMessage</div>
+    </div>
+  }
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-vcenter mb-0">
+        <thead>
+          <tr><th>Name</th><th>Contact No.</th><th>Email</th><th>CNIC</th><th>Share %</th><th></th></tr>
+        </thead>
+        <tbody id="shareholdersTable">
+          @for (int i = 0; i < Model.Shareholders.Count; i++)
+          {
+            <tr class="shareholder-row">
+              <td><input name="Shareholders[@i].Name" value="@Model.Shareholders[i].Name" class="form-control form-control-sm sh-name" /></td>
+              <td><input name="Shareholders[@i].ContactNo" value="@Model.Shareholders[i].ContactNo" class="form-control form-control-sm" /></td>
+              <td><input name="Shareholders[@i].Email" value="@Model.Shareholders[i].Email" class="form-control form-control-sm" type="email" /></td>
+              <td><input name="Shareholders[@i].CNIC" value="@Model.Shareholders[i].CNIC" class="form-control form-control-sm" /></td>
+              <td><input name="Shareholders[@i].ShareholdingPercentage" value="@Model.Shareholders[i].ShareholdingPercentage" class="form-control form-control-sm" type="number" min="0" max="100" step="0.01" /></td>
+              <td><button type="button" class="btn btn-sm btn-ghost-danger remove-row">✕</button></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+@* ── Bank Detail ───────────────────────────────────────────────────────────── *@
+<div class="card mb-3">
+  <div class="card-header"><h4 class="card-title mb-0">Bank Detail <span class="text-secondary fw-normal small">(Optional)</span></h4></div>
+  <div class="card-body">
+    <div class="row g-3">
+
+      <div class="col-md-6">
+        <label asp-for="BusinessBankId" class="form-label"></label>
+        <select asp-for="BusinessBankId" class="form-select">
+          <option value="">-- Select Bank --</option>
+          @foreach (var b in Model.AvailableBanks)
+          {
+            <option value="@b.Id" selected="@(Model.BusinessBankId == b.Id ? "selected" : null)">@b.BankName</option>
+          }
+        </select>
+        <span asp-validation-for="BusinessBankId" class="text-danger small"></span>
+      </div>
+
+      <div class="col-md-6">
+        <label asp-for="BusinessIBAN" class="form-label"></label>
+        <input asp-for="BusinessIBAN" class="form-control" placeholder="e.g. PK36SCBL0000001123456702" />
+        <div class="form-hint">International Bank Account Number (IBAN)</div>
+        <span asp-validation-for="BusinessIBAN" class="text-danger small"></span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  // ── Registration Authority conditional ──────────────────────────────────────
+  var regSelect  = document.getElementById('isRegisteredSelect');
+  var regRow     = document.getElementById('regAuthorityRow');
+  var regInput   = document.getElementById('regAuthorityInput');
+  var regLabel   = regRow ? regRow.querySelector('label') : null;
+
+  function toggleRegAuthority(val) {
+    var show = (val === 'Yes');
+    regRow.style.display = show ? '' : 'none';
+    if (regInput) regInput.required = show;
+    if (regLabel) {
+      regLabel.classList.toggle('required', show);
+    }
+    if (!show && regInput) regInput.value = '';
+  }
+
+  if (regSelect) {
+    regSelect.addEventListener('change', function () { toggleRegAuthority(this.value); });
+    toggleRegAuthority(regSelect.value);
+  }
+
+  // ── Shareholders conditional ────────────────────────────────────────────────
+  var statusSelect     = document.getElementById('businessStatusSelect');
+  var shareholdersCard = document.getElementById('shareholdersCard');
+  var addBtn           = document.getElementById('addShareholderBtn');
+  var tbody            = document.getElementById('shareholdersTable');
+
+  function toggleShareholders(val) {
+    var isPartnership = (val === 'Partnership');
+    shareholdersCard.style.display = isPartnership ? '' : 'none';
+
+    // Add required attribute to first Name field when shown
+    var firstNameInput = tbody ? tbody.querySelector('.sh-name') : null;
+    if (firstNameInput) firstNameInput.required = isPartnership;
+
+    // Ensure at least one row when partnership selected
+    if (isPartnership && tbody && tbody.querySelectorAll('.shareholder-row').length === 0) {
+      addShareholderRow();
+    }
+  }
+
+  if (statusSelect) {
+    statusSelect.addEventListener('change', function () { toggleShareholders(this.value); });
+    toggleShareholders(statusSelect.value);
+  }
+
+  // ── Shareholder rows ────────────────────────────────────────────────────────
+  var rowIndex = @Model.Shareholders.Count;
+
+  function addShareholderRow() {
+    var i = rowIndex++;
+    var tr = document.createElement('tr');
+    tr.className = 'shareholder-row';
+    tr.innerHTML =
+      '<td><input name="Shareholders[' + i + '].Name" class="form-control form-control-sm sh-name" /></td>' +
+      '<td><input name="Shareholders[' + i + '].ContactNo" class="form-control form-control-sm" /></td>' +
+      '<td><input name="Shareholders[' + i + '].Email" class="form-control form-control-sm" type="email" /></td>' +
+      '<td><input name="Shareholders[' + i + '].CNIC" class="form-control form-control-sm" /></td>' +
+      '<td><input name="Shareholders[' + i + '].ShareholdingPercentage" class="form-control form-control-sm" type="number" min="0" max="100" step="0.01" /></td>' +
+      '<td><button type="button" class="btn btn-sm btn-ghost-danger remove-row">✕</button></td>';
+    if (tbody) tbody.appendChild(tr);
+
+    // First row Name becomes required when partnership
+    if (tbody && tbody.querySelectorAll('.shareholder-row').length === 1 && statusSelect && statusSelect.value === 'Partnership') {
+      tr.querySelector('.sh-name').required = true;
+    }
+  }
+
+  if (addBtn) addBtn.addEventListener('click', addShareholderRow);
+
+  if (tbody) {
+    tbody.addEventListener('click', function (e) {
+      var btn = e.target.closest('.remove-row');
+      if (!btn) return;
+      var rows = tbody.querySelectorAll('.shareholder-row');
+      if (rows.length <= 1 && statusSelect && statusSelect.value === 'Partnership') return; // keep at least 1 for partnership
+      btn.closest('tr').remove();
+      // Re-apply required to first row after removal
+      var firstNameInput = tbody.querySelector('.sh-name');
+      if (firstNameInput && statusSelect && statusSelect.value === 'Partnership') firstNameInput.required = true;
+    });
+  }
+})();
+</script>

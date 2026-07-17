@@ -1,0 +1,39 @@
+graph TD
+    subgraph Client["Client Tier"]
+        Browser["Web Browser (HTTPS)"]
+    end
+    subgraph Web["Web Server Tier (Windows Server)"]
+        IIS["IIS / Kestrel
+(.NET 10)"]
+        App["SMElevate.Web
+ASP.NET Core Process"]
+        Uploads["wwwroot/uploads/
+Local File Storage"]
+    end
+    subgraph DB["Database Tier"]
+        SQL[("SQL Server
+.SQLEXPRESS
+SMElevate-v2")]
+    end
+    subgraph ExtSrv["External Services"]
+        SMTP["SMTP Provider
+Port 587 (StartTLS)"]
+        Google["Google OAuth
+accounts.google.com"]
+        Apple["Apple OAuth
+appleid.apple.com"]
+        Microsoft["Microsoft OAuth
+login.microsoftonline.com"]
+    end
+
+    Browser -- "HTTPS" --> IIS
+    IIS --> App
+    App --> SQL
+    App --> Uploads
+    App -- "SMTP over TLS" --> SMTP
+    Browser -- "HTTPS OAuth" --> Google
+    Google -- "Authorization Code Callback" --> App
+    Browser -- "HTTPS OAuth" --> Apple
+    Apple -- "Authorization Code Callback" --> App
+    Browser -- "HTTPS OAuth" --> Microsoft
+    Microsoft -- "Authorization Code Callback" --> App

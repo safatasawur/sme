@@ -1,0 +1,128 @@
+@model SMElevate.Web.Areas.Banks.ViewModels.CreateChecklistViewModel
+@using SMElevate.Web.Models.Common
+@{
+    var request = ViewBag.Request as LoanRequest;
+    var checklist = ViewBag.Checklist as PostApprovalChecklist;
+}
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="row align-items-center">
+      <div class="col"><div class="text-secondary">Application</div><div class="h3 mb-0">@(request?.CaseId ?? request?.RequestNo)</div></div>
+      <div class="col-auto"><span class="badge fs-4 p-2 bg-azure-lt">@(request?.Status?.ValueText ?? "—")</span></div>
+    </div>
+  </div>
+</div>
+
+@if (checklist != null) {
+<div class="card mb-3">
+  <div class="card-header">
+    <h3 class="card-title">@checklist.Title</h3>
+    <div class="card-subtitle text-secondary">@checklist.Description</div>
+    <div class="card-actions">
+      @{ var allVerified = checklist.Items.All(i => i.VerificationStatus == ChecklistItemStatus.Verified || i.VerificationStatus == ChecklistItemStatus.Waived || !i.IsRequired); }
+      @if (allVerified) {
+      <form asp-area="Banks" asp-controller="BankPostApproval" asp-action="AdvanceStatus" method="post" class="d-inline">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="loanRequestId" value="@checklist.LoanRequestId" />
+        <input type="hidden" name="toStatus" value="ReadyForDisbursement" />
+        <button type="submit" class="btn btn-success">Mark Ready for Disbursement</button>
+      </form>
+      }
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-vcenter card-table">
+      <thead><tr><th>Item</th><th>Required</th><th>Document</th><th>Status</th><th>Verified By</th><th>Action</th></tr></thead>
+      <tbody>
+        @foreach (var item in checklist.Items) {
+        <tr>
+          <td>
+            <div class="fw-medium">@item.ItemName</div>
+            <div class="text-secondary small">@item.ItemDescription</div>
+          </td>
+          <td>@(item.IsRequired ? "Yes" : "No")</td>
+          <td>
+            @if (item.SubmittedDocumentPath != null) {
+              <span class="badge bg-green-lt">Submitted</span>
+            } else if (item.DocumentRequired) {
+              <span class="badge bg-yellow-lt">Required</span>
+            } else { <span class="text-secondary">—</span> }
+          </td>
+          <td>
+            <span class="badge @(item.VerificationStatus == ChecklistItemStatus.Verified ? "bg-green-lt" : item.VerificationStatus == ChecklistItemStatus.Rejected ? "bg-red-lt" : item.VerificationStatus == ChecklistItemStatus.Waived ? "bg-blue-lt" : "bg-secondary-lt")">
+              @item.VerificationStatus
+            </span>
+          </td>
+          <td class="text-secondary small">@(item.VerifiedBy?.FullName ?? "—")</td>
+          <td>
+            @if (item.VerificationStatus == ChecklistItemStatus.Pending || item.VerificationStatus == ChecklistItemStatus.Submitted) {
+            <form asp-area="Banks" asp-controller="BankPostApproval" asp-action="VerifyItem" method="post" class="d-flex gap-1">
+              @Html.AntiForgeryToken()
+              <input type="hidden" name="itemId" value="@item.Id" />
+              <input type="hidden" name="remarks" value="" />
+              <button type="submit" name="status" value="@ChecklistItemStatus.Verified" class="btn btn-sm btn-success">Verify</button>
+              <button type="submit" name="status" value="@ChecklistItemStatus.Rejected" class="btn btn-sm btn-danger">Reject</button>
+              <button type="submit" name="status" value="@ChecklistItemStatus.Waived" class="btn btn-sm btn-outline-secondary">Waive</button>
+            </form>
+            }
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+} else {
+<div class="card mb-3">
+  <form asp-area="Banks" asp-controller="BankPostApproval" asp-action="CreateChecklist" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="LoanRequestId" />
+    <div class="card-header"><h3 class="card-title">Create Post-Approval Checklist</h3></div>
+    <div class="card-body">
+      <div class="mb-3">
+        <label asp-for="Title" class="form-label required">Checklist Title</label>
+        <input asp-for="Title" class="form-control" placeholder="e.g. Pre-Disbursement Checklist" />
+      </div>
+      <div class="mb-3">
+        <label asp-for="Description" class="form-label">Description</label>
+        <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+      </div>
+      <hr />
+      <h4>Items <button type="button" class="btn btn-sm btn-outline-primary ms-2" onclick="addItem()">+ Add Item</button></h4>
+      <div id="items-container">
+        <div class="item-row row g-2 mb-2 align-items-end border-bottom pb-2">
+          <div class="col-md-4"><label class="form-label required">Item Name</label><input type="text" name="Items[0].ItemName" class="form-control" placeholder="e.g. Insurance Policy" required /></div>
+          <div class="col-md-4"><label class="form-label">Description</label><input type="text" name="Items[0].ItemDescription" class="form-control" /></div>
+          <div class="col-md-2 d-flex gap-2 align-items-center">
+            <div class="form-check"><input type="checkbox" name="Items[0].IsRequired" class="form-check-input" id="req0" value="true" checked /><label class="form-check-label" for="req0">Required</label></div>
+          </div>
+          <div class="col-md-2 d-flex gap-2 align-items-center">
+            <div class="form-check"><input type="checkbox" name="Items[0].DocumentRequired" class="form-check-input" id="doc0" value="true" /><label class="form-check-label" for="doc0">Doc Needed</label></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer text-end"><button type="submit" class="btn btn-primary">Create Checklist</button></div>
+  </form>
+</div>
+}
+
+@section HeaderActions {
+  <a asp-area="Banks" asp-controller="BankRequests" asp-action="Detail" asp-route-id="@(checklist?.LoanRequestId ?? Model.LoanRequestId)" class="btn btn-2">Back to Application</a>
+}
+@section Scripts {
+<script>
+var itemCount = 1;
+function addItem() {
+  var i = itemCount++;
+  var container = document.getElementById('items-container');
+  var div = document.createElement('div');
+  div.className = 'item-row row g-2 mb-2 align-items-end border-bottom pb-2';
+  div.innerHTML = '<div class="col-md-4"><label class="form-label required">Item Name</label><input type="text" name="Items['+i+'].ItemName" class="form-control" placeholder="Item name" required /></div>' +
+    '<div class="col-md-4"><label class="form-label">Description</label><input type="text" name="Items['+i+'].ItemDescription" class="form-control" /></div>' +
+    '<div class="col-md-2 d-flex gap-2 align-items-center"><div class="form-check"><input type="checkbox" name="Items['+i+'].IsRequired" class="form-check-input" id="req'+i+'" value="true" checked /><label class="form-check-label" for="req'+i+'">Required</label></div></div>' +
+    '<div class="col-md-2 d-flex gap-2 align-items-center"><div class="form-check"><input type="checkbox" name="Items['+i+'].DocumentRequired" class="form-check-input" id="doc'+i+'" value="true" /><label class="form-check-label" for="doc'+i+'">Doc Needed</label></div></div>';
+  container.appendChild(div);
+}
+</script>
+}

@@ -1,0 +1,13 @@
+@model SMElevate.Web.Models.Common.EndUserProfile
+<div class="card"><div class="card-body">
+  <div class="datagrid">
+    <div class="datagrid-item"><div class="datagrid-title">First Name</div><div class="datagrid-content">@Model.FirstName</div></div>
+    <div class="datagrid-item"><div class="datagrid-title">Last Name</div><div class="datagrid-content">@Model.LastName</div></div>
+    <div class="datagrid-item"><div class="datagrid-title">Mobile No.</div><div class="datagrid-content">@Model.MobileNo</div></div>
+    <div class="datagrid-item"><div class="datagrid-title">CNIC</div><div class="datagrid-content">@Model.CNIC</div></div>
+    <div class="datagrid-item"><div class="datagrid-title">Business Email</div><div class="datagrid-content">@Model.BusinessEmailAddress</div></div>
+    <div class="datagrid-item"><div class="datagrid-title">Gender</div><div class="datagrid-content">@Model.GenderOfProprietor</div></div>
+    <div class="datagrid-item"><div class="datagrid-title">Verification Status</div><div class="datagrid-content"><span class="badge @(Model.IsVerified ? "bg-green-lt" : "bg-orange-lt")">@(Model.IsVerified ? "Verified" : "Pending Verification")</span></div></div>
+  </div>
+</div>
+<div class="card-footer"><a asp-area="EndUser" asp-controller="EndUserProfile" asp-action="Complete" class="btn btn-2">Edit Profile</a></div></div>

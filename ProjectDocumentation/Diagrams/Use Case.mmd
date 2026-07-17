@@ -1,0 +1,39 @@
+graph TD
+    Admin((System Admin))
+    Bank((Bank Officer))
+    SME((SME Owner))
+    Google((Google OAuth))
+    Apple((Apple OAuth))
+    MS((Microsoft OAuth))
+
+    Admin --> UC1[Manage Users]
+    Admin --> UC2[Manage Banks]
+    Admin --> UC3[Manage Schemes]
+    Admin --> UC4[Configure Form Builder]
+    Admin --> UC5[Manage System Settings]
+    Admin --> UC6[View Admin Dashboard]
+    Admin --> UC7[Manage Master Lookups]
+    Admin --> UC8[Manage Roles]
+    Admin --> UC9[View Audit Logs]
+
+    Bank --> UC10[OTP Login]
+    Bank --> UC11[View Assigned Applications]
+    Bank --> UC12[Submit Decision on Application]
+    Bank --> UC13[Upload Supporting Attachment]
+    Bank --> UC14[View Bank Dashboard]
+
+    SME --> UC15[Register Account]
+    SME --> UC16[Manual Login]
+    SME --> UC17[Social Login]
+    SME --> UC18[Complete Business Profile]
+    SME --> UC19[Verify Profile via Email Token]
+    SME --> UC20[Select Scheme and Submit Loan Application]
+    SME --> UC21[Track Application Status]
+    SME --> UC22[View Notifications]
+
+    UC17 --> Google
+    UC17 --> Apple
+    UC17 --> MS
+    Google --> UC17
+    Apple --> UC17
+    MS --> UC17

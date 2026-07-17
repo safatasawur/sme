@@ -1,0 +1,34 @@
+graph LR
+    SME(["SME Owner
+(Loan Applicant)"])
+    Bank(["Bank Officer
+(Credit Reviewer)"])
+    Admin(["System Admin
+(Platform Operator)"])
+    SBP(["SBP
+(Regulator/Sponsor)"])
+    OAuth(["OAuth Providers
+(Google/Apple/Microsoft)"])
+    SMTP(["SMTP Server
+(Email Delivery)"])
+
+    SME -- "Register, Login, Submit Loan Application,
+Track Status, View Notifications" --> PORTAL[SMElevate V2 Platform]
+    PORTAL -- "Status Notifications, Emails,
+In-App Alerts" --> SME
+    Bank -- "OTP Login, Review Application,
+Submit Decision, Upload Attachment" --> PORTAL
+    PORTAL -- "New Application Alerts, OTP,
+Decision Confirmation" --> Bank
+    Admin -- "Manage Users/Banks/Schemes/Settings,
+View Dashboard/Audit Logs" --> PORTAL
+    PORTAL -- "Admin Reports, Analytics" --> Admin
+    SBP -- "Policy & Scheme Definitions
+(via Admin Portal)" --> PORTAL
+    PORTAL -- "Platform Reports
+(Future)" --> SBP
+    OAuth -- "Authorization Tokens, Claims" --> PORTAL
+    PORTAL -- "Email Messages
+(Notifications, OTP, Templates)" --> SMTP
+    SMTP -- "Delivered Emails" --> SME
+    SMTP -- "Delivered Emails" --> Bank

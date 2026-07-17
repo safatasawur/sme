@@ -1,0 +1,45 @@
+flowchart LR
+    subgraph SME["SME Owner"]
+        S1[Register / Social Login]
+        S2[Complete Business Profile]
+        S3[Enter Verification Token]
+        S4[Select Scheme]
+        S5[Fill Dynamic Loan Application Form]
+        S6[Add Shareholders]
+        S7[Select Bank and Submit]
+        S8[Receive Submission Confirmation]
+        S9[Monitor Application Status]
+        S10{Offer Received?
+(Future)}
+        S11[Accept or Decline Offer
+Future]
+    end
+    subgraph Bank["Bank Officer"]
+        B1[Receive OTP Login Email]
+        B2[Enter OTP]
+        B3[View Assigned Application]
+        B4[Review Business Details and Documents]
+        B5{Decision}
+        B6[Set In Process + Notify SME]
+        B7[Approve with Remarks + Notify]
+        B8[Reject with Remarks + Notify]
+        B9[Request More Info + Notify]
+    end
+    subgraph Admin["System Admin"]
+        A1[Create Financing Scheme]
+        A2[Configure Form Fields in Form Builder]
+        A3[Publish Scheme]
+        A4[Scheme Live for SMEs]
+        A5[Monitor via Dashboard and Audit Logs]
+    end
+
+    A1 --> A2 --> A3 --> A4
+    S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7 --> S8 --> S9
+    S3 -- "Verification email" --> S3
+    S7 -- "Triggers bank notification" --> Bank
+    B1 --> B2 --> B3 --> B4 --> B5
+    B5 -- "In Process" --> B6
+    B5 -- "Approved" --> B7
+    B5 -- "Rejected" --> B8
+    B5 -- "More Info" --> B9
+    B7 & B8 & B6 & B9 -- "Status update notifies SME" --> S9

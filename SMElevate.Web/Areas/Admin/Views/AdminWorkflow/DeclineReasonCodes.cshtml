@@ -1,0 +1,93 @@
+@model List<SMElevate.Web.Models.Common.DeclineReasonCode>
+<div class="row row-cards">
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Decline Reason Codes</h3></div>
+      <div class="table-responsive">
+        <table class="table table-vcenter card-table">
+          <thead>
+            <tr><th>Code</th><th>Category</th><th>Description</th><th>Active</th><th></th></tr>
+          </thead>
+          <tbody>
+            @foreach (var d in Model) {
+            <tr>
+              <td><code>@d.Code</code></td>
+              <td><span class="badge bg-azure-lt">@d.Category</span></td>
+              <td>@d.Description</td>
+              <td>
+                <form asp-area="Admin" asp-controller="AdminWorkflow" asp-action="ToggleDeclineReasonCode" method="post" class="d-inline">
+                  @Html.AntiForgeryToken()
+                  <input type="hidden" name="id" value="@d.Id" />
+                  <button type="submit" class="btn btn-sm @(d.IsActive ? "btn-success" : "btn-outline-secondary")">@(d.IsActive ? "Active" : "Inactive")</button>
+                </form>
+              </td>
+              <td>
+                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editModal"
+                  data-id="@d.Id" data-code="@d.Code" data-desc="@d.Description" data-cat="@d.Category" data-active="@d.IsActive.ToString().ToLower()">
+                  Edit
+                </button>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Add Reason Code</h3></div>
+      <form asp-area="Admin" asp-controller="AdminWorkflow" asp-action="SaveDeclineReasonCode" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="Id" value="0" />
+        <div class="card-body">
+          <div class="mb-3"><label class="form-label required">Code</label><input name="Code" class="form-control" required /></div>
+          <div class="mb-3"><label class="form-label required">Category</label>
+            <select name="Category" class="form-select">
+              <option>Credit</option><option>Compliance</option><option>Documentation</option><option>Other</option>
+            </select>
+          </div>
+          <div class="mb-3"><label class="form-label required">Description</label><textarea name="Description" class="form-control" rows="2" required></textarea></div>
+          <div class="mb-3"><div class="form-check"><input name="IsActive" type="checkbox" class="form-check-input" id="newActive" checked value="true" /><label class="form-check-label" for="newActive">Active</label></div></div>
+        </div>
+        <div class="card-footer text-end"><button type="submit" class="btn btn-primary">Add Code</button></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal modal-blur fade" id="editModal" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <form asp-area="Admin" asp-controller="AdminWorkflow" asp-action="SaveDeclineReasonCode" method="post">
+        @Html.AntiForgeryToken()
+        <div class="modal-header"><h5 class="modal-title">Edit Reason Code</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <input type="hidden" name="Id" id="edit-id" />
+          <div class="mb-2"><label class="form-label required">Code</label><input name="Code" id="edit-code" class="form-control" required /></div>
+          <div class="mb-2"><label class="form-label required">Category</label>
+            <select name="Category" id="edit-cat" class="form-select">
+              <option>Credit</option><option>Compliance</option><option>Documentation</option><option>Other</option>
+            </select>
+          </div>
+          <div class="mb-2"><label class="form-label required">Description</label><textarea name="Description" id="edit-desc" class="form-control" rows="2" required></textarea></div>
+          <div class="form-check"><input name="IsActive" type="checkbox" id="edit-active" class="form-check-input" value="true" /><label class="form-check-label" for="edit-active">Active</label></div>
+        </div>
+        <div class="modal-footer"><button type="submit" class="btn btn-primary">Save</button></div>
+      </form>
+    </div>
+  </div>
+</div>
+@section Scripts {
+<script>
+document.getElementById('editModal').addEventListener('show.bs.modal', function(e) {
+  var btn = e.relatedTarget;
+  document.getElementById('edit-id').value = btn.dataset.id;
+  document.getElementById('edit-code').value = btn.dataset.code;
+  document.getElementById('edit-desc').value = btn.dataset.desc;
+  document.getElementById('edit-active').checked = btn.dataset.active === 'true';
+  var cat = document.getElementById('edit-cat');
+  for (var o of cat.options) o.selected = o.value === btn.dataset.cat;
+});
+</script>
+}

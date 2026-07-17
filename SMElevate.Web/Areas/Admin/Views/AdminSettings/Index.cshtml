@@ -1,0 +1,36 @@
+@model SMElevate.Web.Areas.Admin.ViewModels.SettingsViewModel
+<div class="card">
+  <div class="card-header">
+    <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs" role="tablist">
+      <li class="nav-item"><a href="#tab-email" class="nav-link active" data-bs-toggle="tab">Email Settings</a></li>
+      <li class="nav-item"><a href="#tab-notification" class="nav-link" data-bs-toggle="tab">Notification</a></li>
+      <li class="nav-item"><a href="#tab-oauth" class="nav-link" data-bs-toggle="tab">OAuth Client</a></li>
+      <li class="nav-item"><a href="#tab-general" class="nav-link" data-bs-toggle="tab">General</a></li>
+    </ul>
+  </div>
+  <div class="card-body">
+    <div class="tab-content">
+      <div class="tab-pane active show" id="tab-email">
+        <form method="post" asp-area="Admin" asp-controller="AdminSettings" asp-action="Save" asp-antiforgery="true">@Html.AntiForgeryToken()<input type="hidden" name="tab" value="email" />
+        @foreach (var kv in Model.Email) {<div class="mb-3"><label class="form-label">@kv.Key.Replace("Smtp.","")</label><input type="@(kv.Key.Contains("Password") ? "password" : "text")" name="Email[@kv.Key]" class="form-control" value="@kv.Value" /></div>}
+        <div class="text-end"><button type="submit" class="btn btn-primary">Save Email Settings</button></div></form>
+      </div>
+      <div class="tab-pane" id="tab-notification">
+        <form method="post" asp-area="Admin" asp-controller="AdminSettings" asp-action="Save" asp-antiforgery="true">@Html.AntiForgeryToken()<input type="hidden" name="tab" value="notification" />
+        @foreach (var kv in Model.Notification) {<div class="mb-3"><label class="form-label">@kv.Key.Replace("Notification.","")</label><input type="text" name="Notification[@kv.Key]" class="form-control" value="@kv.Value" /></div>}
+        <div class="text-end"><button type="submit" class="btn btn-primary">Save Notification Settings</button></div></form>
+      </div>
+      <div class="tab-pane" id="tab-oauth">
+        <p class="text-secondary">Frontend placeholder only — no real OAuth integration in Phase 2.</p>
+        <form method="post" asp-area="Admin" asp-controller="AdminSettings" asp-action="Save" asp-antiforgery="true">@Html.AntiForgeryToken()<input type="hidden" name="tab" value="oauth" />
+        @foreach (var kv in Model.OAuth) {<div class="mb-3"><label class="form-label">@kv.Key.Replace("OAuth.","")</label><input type="@(kv.Key.Contains("Secret") ? "password" : "text")" name="OAuth[@kv.Key]" class="form-control" value="@kv.Value" /></div>}
+        <div class="text-end"><button type="submit" class="btn btn-primary">Save OAuth Settings</button></div></form>
+      </div>
+      <div class="tab-pane" id="tab-general">
+        <form method="post" asp-area="Admin" asp-controller="AdminSettings" asp-action="Save" asp-antiforgery="true">@Html.AntiForgeryToken()<input type="hidden" name="tab" value="general" />
+        @foreach (var kv in Model.General) {<div class="mb-3"><label class="form-label">@kv.Key.Replace("General.","")</label><input type="text" name="General[@kv.Key]" class="form-control" value="@kv.Value" /></div>}
+        <div class="text-end"><button type="submit" class="btn btn-primary">Save General Settings</button></div></form>
+      </div>
+    </div>
+  </div>
+</div>
