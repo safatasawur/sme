@@ -22,8 +22,8 @@ jobs:
 
       - name: Download Dependency-Check
         run: |
-          wget https://github.com/dependency-check/DependencyCheck/releases/latest/download/dependency-check.zip
-          unzip dependency-check.zip
+         curl -L https://github.com/dependency-check/DependencyCheck/releases/download/v12.2.2/dependency-check-12.2.2-release.zip -o dependency-check.zip
+         unzip dependency-check.zip
 
       - name: Run Dependency Check
         run: |
