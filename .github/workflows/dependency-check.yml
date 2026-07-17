@@ -2,19 +2,9 @@ name: OWASP Dependency Check
 
 on:
   push:
-    branches:
-      - main
-      - develop
+    branches: [main, develop]
   pull_request:
-    branches:
-      - main
-      - develop
-  schedule:
-    - cron: '0 2 * * 1' # Every Monday at 02:00 UTC
-
-permissions:
-  contents: read
-  security-events: write
+    branches: [main, develop]
 
 jobs:
   dependency-check:
@@ -30,21 +20,21 @@ jobs:
           distribution: temurin
           java-version: '21'
 
-      - name: Run OWASP Dependency Check
-        uses: dependency-check/Dependency-Check_Action@main
-        with:
-          project: "SMElevate"
-          path: "."
-          format: "HTML,JSON,SARIF"
-          out: "reports"
+      - name: Download Dependency-Check
+        run: |
+          wget https://github.com/dependency-check/DependencyCheck/releases/latest/download/dependency-check.zip
+          unzip dependency-check.zip
 
-      - name: Upload HTML Report
+      - name: Run Dependency Check
+        run: |
+          ./dependency-check/bin/dependency-check.sh \
+            --project "SMElevate" \
+            --scan . \
+            --format HTML \
+            --out reports
+
+      - name: Upload Report
         uses: actions/upload-artifact@v4
         with:
           name: dependency-check-report
-          path: reports
-
-      - name: Upload SARIF Results
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: reports/dependency-check-report.sarif
+          path: reports/
